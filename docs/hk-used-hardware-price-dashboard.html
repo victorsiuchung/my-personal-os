@@ -1,0 +1,615 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HK Used Hardware Price Watch</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #fafafa;
+      --panel: #ffffff;
+      --panel-2: #f4f4f5;
+      --line: #e4e4e7;
+      --ink: #09090b;
+      --muted: #71717a;
+      --green: #16a34a;
+      --amber: #d97706;
+      --rose: #e11d48;
+      --blue: #2563eb;
+      --shadow: 0 1px 2px rgba(24, 24, 27, .06), 0 12px 30px rgba(24, 24, 27, .07);
+    }
+
+    [data-theme="dark"] {
+      color-scheme: dark;
+      --bg: #09090b;
+      --panel: #0f0f12;
+      --panel-2: #18181b;
+      --line: #27272a;
+      --ink: #fafafa;
+      --muted: #a1a1aa;
+      --green: #86efac;
+      --amber: #fbbf24;
+      --rose: #fb7185;
+      --blue: #93c5fd;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .36), 0 14px 36px rgba(0, 0, 0, .25);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 8% 0%, color-mix(in srgb, var(--blue), transparent 88%), transparent 30rem),
+        radial-gradient(circle at 92% 0%, color-mix(in srgb, var(--green), transparent 90%), transparent 28rem),
+        var(--bg);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0;
+    }
+
+    button, input, select { font: inherit; }
+    button, select, input {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      color: var(--ink);
+    }
+
+    button {
+      min-height: 40px;
+      padding: 9px 13px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 650;
+    }
+
+    button:hover, input:focus, select:focus {
+      outline: 0;
+      border-color: color-mix(in srgb, var(--ink), transparent 40%);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--ink), transparent 88%);
+    }
+
+    .primary {
+      background: var(--ink);
+      border-color: var(--ink);
+      color: var(--bg);
+    }
+
+    .app {
+      width: min(1440px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 22px 0 44px;
+    }
+
+    header {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 18px;
+      align-items: center;
+      padding: 12px 0 20px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      margin: 0 0 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--panel);
+      color: var(--muted);
+      padding: 5px 10px;
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(30px, 4vw, 54px);
+      line-height: 1;
+      font-weight: 820;
+      letter-spacing: -.01em;
+    }
+
+    .lede {
+      margin: 10px 0 0;
+      color: var(--muted);
+      line-height: 1.5;
+      max-width: 780px;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .status {
+      margin-top: 14px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 11px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      color: var(--muted);
+      box-shadow: var(--shadow);
+      font-size: 14px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .stat, .panel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .stat {
+      padding: 16px;
+      min-height: 108px;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 34px;
+      line-height: 1;
+      margin-bottom: 10px;
+    }
+
+    .stat span {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 390px minmax(0, 1fr);
+      gap: 14px;
+      margin-top: 14px;
+      min-height: 680px;
+    }
+
+    .panel {
+      overflow: hidden;
+      min-width: 0;
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px;
+      border-bottom: 1px solid var(--line);
+      background: color-mix(in srgb, var(--panel), var(--panel-2) 35%);
+    }
+
+    .panel-title {
+      margin: 0;
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 750;
+    }
+
+    .filters {
+      display: grid;
+      gap: 10px;
+      padding: 14px;
+      border-bottom: 1px solid var(--line);
+      background: color-mix(in srgb, var(--panel), var(--panel-2) 35%);
+    }
+
+    input, select {
+      width: 100%;
+      min-height: 42px;
+      padding: 10px 11px;
+      font-size: 14px;
+    }
+
+    .recommendations, .list {
+      display: grid;
+      gap: 8px;
+      padding: 10px;
+      max-height: 620px;
+      overflow: auto;
+    }
+
+    .rec, .item {
+      width: 100%;
+      text-align: left;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      padding: 12px;
+    }
+
+    .rec.good {
+      border-color: color-mix(in srgb, var(--green), var(--line) 45%);
+      background: color-mix(in srgb, var(--green), var(--panel) 92%);
+    }
+
+    .rec.watch {
+      border-color: color-mix(in srgb, var(--amber), var(--line) 45%);
+      background: color-mix(in srgb, var(--amber), var(--panel) 93%);
+    }
+
+    .item {
+      display: grid;
+      gap: 6px;
+      min-height: 84px;
+      cursor: pointer;
+    }
+
+    .item:hover, .item.active {
+      background: var(--panel-2);
+    }
+
+    .item.active {
+      border-color: color-mix(in srgb, var(--blue), var(--line) 40%);
+    }
+
+    .title {
+      font-weight: 760;
+      line-height: 1.25;
+      overflow-wrap: anywhere;
+    }
+
+    .meta {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .pill {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--panel);
+      color: var(--muted);
+      padding: 2px 8px;
+      font-weight: 650;
+    }
+
+    .price {
+      color: var(--green);
+      font-weight: 820;
+    }
+
+    .score {
+      color: var(--blue);
+      font-weight: 820;
+    }
+
+    .detail {
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+
+    .detail-head {
+      padding: 22px;
+      border-bottom: 1px solid var(--line);
+      background:
+        linear-gradient(135deg, color-mix(in srgb, var(--blue), transparent 90%), transparent 44%),
+        linear-gradient(45deg, color-mix(in srgb, var(--green), transparent 90%), transparent 36%),
+        var(--panel);
+    }
+
+    .detail-head h2 {
+      margin: 0;
+      font-size: clamp(26px, 4vw, 46px);
+      line-height: 1.06;
+      letter-spacing: -.01em;
+      overflow-wrap: anywhere;
+    }
+
+    .detail-sub {
+      margin: 0 0 10px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .detail-body {
+      padding: 16px;
+      overflow: auto;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .box {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      padding: 13px;
+      min-height: 82px;
+    }
+
+    .box h3 {
+      margin: 0 0 8px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 760;
+    }
+
+    .box p {
+      margin: 0;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    .link {
+      display: inline-block;
+      margin-top: 12px;
+      color: var(--blue);
+      font-weight: 760;
+      text-decoration: none;
+    }
+
+    .empty {
+      display: grid;
+      place-items: center;
+      min-height: 360px;
+      color: var(--muted);
+      text-align: center;
+      padding: 24px;
+    }
+
+    @media (max-width: 980px) {
+      header, .status, .stats, .layout, .grid {
+        grid-template-columns: 1fr;
+      }
+      .actions { justify-content: flex-start; }
+    }
+  </style>
+</head>
+<body data-theme="dark">
+  <main class="app">
+    <header>
+      <div>
+        <p class="eyebrow">Market Observer · DC Fever · HKEPC Trading</p>
+        <h1>HK Used Hardware Price Watch</h1>
+        <p class="lede">A focused dashboard for watching Hong Kong second-hand hardware prices and spotting unusually cheap listings before they disappear.</p>
+      </div>
+      <div class="actions">
+        <button id="themeToggle" type="button">Dark</button>
+        <button id="openDc" type="button">DC Fever</button>
+        <button id="openHk" type="button">HKEPC</button>
+        <button id="exportBtn" type="button" class="primary">Export Watchlist</button>
+      </div>
+    </header>
+
+    <section class="status">
+      <span id="statusText">Snapshot: 2026-06-09 · GPU listings from DC Fever, trading titles from HKEPC</span>
+      <span>Refresh source pages before buying</span>
+    </section>
+
+    <section class="stats">
+      <div class="stat"><strong id="listingCount">0</strong><span>Tracked listings</span></div>
+      <div class="stat"><strong id="goodCount">0</strong><span>Recommend checks</span></div>
+      <div class="stat"><strong id="avgPrice">-</strong><span>Average priced item</span></div>
+      <div class="stat"><strong id="sourceCount">2</strong><span>Market sources</span></div>
+    </section>
+
+    <section class="layout">
+      <aside class="panel">
+        <div class="panel-head">
+          <h2 class="panel-title">Recommendations</h2>
+          <span class="pill">price observer mode</span>
+        </div>
+        <div id="recommendations" class="recommendations"></div>
+      </aside>
+
+      <section class="panel">
+        <div class="filters">
+          <input id="searchInput" type="search" placeholder="Search model, seller, source">
+          <select id="gradeFilter">
+            <option value="">All grades</option>
+            <option value="good">Recommend</option>
+            <option value="watch">Watch</option>
+            <option value="skip">Skip / noise</option>
+          </select>
+        </div>
+        <div class="layout" style="grid-template-columns: 360px minmax(0, 1fr); margin: 0; min-height: 0;">
+          <div id="listingList" class="list"></div>
+          <article class="detail">
+            <div class="detail-head">
+              <p id="detailMeta" class="detail-sub">Select a listing</p>
+              <h2 id="detailTitle">Pick a deal to inspect</h2>
+              <a id="detailLink" class="link" href="#" target="_blank" rel="noreferrer">Open source listing</a>
+            </div>
+            <div id="detailBody" class="detail-body">
+              <div class="empty">Choose a listing to see price logic, source, caveats, and buy-check notes.</div>
+            </div>
+          </article>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    const dcFeverUrl = "https://www.dcfever.com/trading/listing.php?id=84";
+    const hkepcUrl = "https://www.hkepc.com/forum/forumdisplay.php?fid=14";
+    const themeKey = "hkHardwareWatch.theme";
+
+    const listings = [
+      { id: "dc-3080-zotac", source: "DC Fever", category: "GPU", title: "ZOTAC GAMING GeForce RTX 3080 Trinity", price: 2400, seller: "Mightyhammer", age: "22 小時前", url: "https://www.dcfever.com/trading/listing.php?id=84", benchmark: 2850, grade: "good", reason: "RTX 3080 at HK$2,400 is below the watch threshold for a 10GB 3080-class card. Worth checking condition, mining history, thermals, and whether it is a quick-sale price." },
+      { id: "dc-3060ti", source: "DC Fever", category: "GPU", title: "RTX 3060TI", price: 1100, seller: "jt9862", age: "22 小時前", url: "https://www.dcfever.com/trading/listing.php?id=84", benchmark: 1400, grade: "good", reason: "HK$1,100 for a 3060 Ti is attractive if the card is stable and not heavily mined. Strong budget gaming candidate." },
+      { id: "dc-3060ti-tuf", source: "DC Fever", category: "GPU", title: "ASUS TUF 3060ti 8GB", price: 1300, seller: "Mightyhammer", age: "22 小時前", url: "https://www.dcfever.com/trading/listing.php?id=84", benchmark: 1400, grade: "watch", reason: "Fair-to-good price for a better cooler model. Not a screaming bargain, but worth messaging if condition is clean." },
+      { id: "dc-3080ti-evga", source: "DC Fever", category: "GPU", title: "EVGA 3080ti", price: 3200, seller: "Mightyhammer", age: "22 小時前", url: "https://www.dcfever.com/trading/listing.php?id=84", benchmark: 3600, grade: "watch", reason: "3080 Ti at HK$3,200 is interesting. Recommend only after checking VRAM temps, warranty status, and stress test screenshots." },
+      { id: "dc-1080ti-strix", source: "DC Fever", category: "GPU", title: "NVIDIA ROG STRIX GTX1080Ti", price: 900, seller: "Rukonano", age: "23 小時前", url: "https://www.dcfever.com/trading/listing.php?id=84", benchmark: 950, grade: "watch", reason: "Old but still usable. HK$900 is acceptable if you need cheap raster performance, but power draw and age risk are high." },
+      { id: "dc-1660s", source: "DC Fever", category: "GPU", title: "MSI GTX1660 Super", price: 650, seller: "零件散賣", age: "2 日前", url: "https://www.dcfever.com/trading/listing.php?id=84", benchmark: 700, grade: "watch", reason: "Decent low-budget card. Recommend only for simple 1080p use; check fan noise and HDMI/DP ports." },
+      { id: "dc-3070ti", source: "DC Fever", category: "GPU", title: "INNO3D GeForce RTX 3070 Ti iChill X4", price: 1600, seller: "kevinfx520", age: "12 日前", url: "https://www.dcfever.com/trading/listing.php?id=84", benchmark: 1900, grade: "good", reason: "HK$1,600 is notably low for 3070 Ti-class performance. Check if sold, warranty, temperature, and whether listing age means hidden issue." },
+      { id: "dc-4070", source: "DC Fever", category: "GPU", title: "MSI GeForce RTX 4070 VENTUS 2X 12G OC", price: 3200, seller: "kevinfx520", age: "12 日前", url: "https://www.dcfever.com/trading/listing.php?id=84", benchmark: 3400, grade: "watch", reason: "Reasonable but not urgent. RTX 4070 has efficiency advantage; negotiate if warranty is short." },
+      { id: "dc-a750", source: "DC Fever", category: "GPU", title: "GUNNIR Intel Arc A750 Photon 8G OC", price: 1100, seller: "plaxton2", age: "1 日前", url: "https://www.dcfever.com/trading/listing.php?id=84", benchmark: 1150, grade: "skip", reason: "Price is around fair, but Arc driver/game compatibility matters. Buy only for specific workloads you have checked." },
+      { id: "dc-3090-strix", source: "DC Fever", category: "GPU", title: "ROG Strix RTX 3090 OC 有盒冇單冇保", price: 9000, seller: "pierce2160", age: "5 小時前", url: "https://www.dcfever.com/trading/listing.php?id=84", benchmark: 5200, grade: "skip", reason: "Price is far above normal second-hand 3090 value. No invoice/warranty makes it a pass unless there is special collectible reason." },
+      { id: "hk-7800xt", source: "HKEPC", category: "GPU", title: "sapphire 7800xt PULSE 16gb [end12/6]", price: null, seller: "HKEPC seller", age: "current forum list", url: "https://www.hkepc.com/forum/forumdisplay.php?fid=14", benchmark: 3300, grade: "watch", reason: "HKEPC listing title found, but price needs opening the thread. 7800 XT is worth checking if under HK$3,000-3,300 depending warranty." },
+      { id: "hk-laptop-ram", source: "HKEPC", category: "RAM", title: "Laptop RAM DDR4 & DDR5 (12/6 End)", price: null, seller: "HKEPC seller", age: "current forum list", url: "https://www.hkepc.com/forum/forumdisplay.php?fid=14", benchmark: null, grade: "watch", reason: "No price in index. Worth checking only if capacity/speed matches your need; RAM bargains depend heavily on exact kit size." },
+      { id: "hk-qnap", source: "HKEPC", category: "NAS", title: "QNAP TS-563 NAS 8G RAM end 10-6-2026", price: null, seller: "HKEPC seller", age: "current forum list", url: "https://www.hkepc.com/forum/forumdisplay.php?fid=14", benchmark: null, grade: "watch", reason: "NAS can be good value, but check drive bays, PSU health, firmware support, and whether disks are included." }
+    ];
+
+    let selectedId = listings[0].id;
+
+    const els = {
+      themeToggle: document.querySelector("#themeToggle"),
+      openDc: document.querySelector("#openDc"),
+      openHk: document.querySelector("#openHk"),
+      exportBtn: document.querySelector("#exportBtn"),
+      searchInput: document.querySelector("#searchInput"),
+      gradeFilter: document.querySelector("#gradeFilter"),
+      recommendations: document.querySelector("#recommendations"),
+      listingList: document.querySelector("#listingList"),
+      detailMeta: document.querySelector("#detailMeta"),
+      detailTitle: document.querySelector("#detailTitle"),
+      detailLink: document.querySelector("#detailLink"),
+      detailBody: document.querySelector("#detailBody"),
+      listingCount: document.querySelector("#listingCount"),
+      goodCount: document.querySelector("#goodCount"),
+      avgPrice: document.querySelector("#avgPrice")
+    };
+
+    document.body.dataset.theme = localStorage.getItem(themeKey) || "dark";
+    els.themeToggle.textContent = document.body.dataset.theme === "dark" ? "Dark" : "Light";
+
+    els.themeToggle.addEventListener("click", () => {
+      const next = document.body.dataset.theme === "dark" ? "light" : "dark";
+      document.body.dataset.theme = next;
+      els.themeToggle.textContent = next === "dark" ? "Dark" : "Light";
+      localStorage.setItem(themeKey, next);
+    });
+    els.openDc.addEventListener("click", () => window.open(dcFeverUrl, "_blank", "noreferrer"));
+    els.openHk.addEventListener("click", () => window.open(hkepcUrl, "_blank", "noreferrer"));
+    els.exportBtn.addEventListener("click", exportWatchlist);
+    els.searchInput.addEventListener("input", render);
+    els.gradeFilter.addEventListener("change", render);
+
+    render();
+    selectListing(selectedId);
+
+    function recommendationScore(item) {
+      if (!item.price || !item.benchmark) return item.grade === "watch" ? 68 : 40;
+      const discount = Math.max(0, (item.benchmark - item.price) / item.benchmark);
+      const freshness = /小時/.test(item.age) ? 10 : /1 日|2 日/.test(item.age) ? 6 : 0;
+      return Math.round(Math.min(98, discount * 100 + 58 + freshness));
+    }
+
+    function filteredListings() {
+      const q = els.searchInput.value.trim().toLowerCase();
+      const grade = els.gradeFilter.value;
+      return listings.filter(item => {
+        const haystack = `${item.title} ${item.source} ${item.seller} ${item.category}`.toLowerCase();
+        return (!q || haystack.includes(q)) && (!grade || item.grade === grade);
+      });
+    }
+
+    function render() {
+      const priced = listings.filter(item => Number.isFinite(item.price));
+      const avg = priced.reduce((sum, item) => sum + item.price, 0) / priced.length;
+      els.listingCount.textContent = listings.length;
+      els.goodCount.textContent = listings.filter(item => item.grade === "good").length;
+      els.avgPrice.textContent = `HK$${Math.round(avg).toLocaleString()}`;
+
+      const recs = listings
+        .filter(item => item.grade === "good" || item.grade === "watch")
+        .sort((a, b) => recommendationScore(b) - recommendationScore(a))
+        .slice(0, 6);
+
+      els.recommendations.innerHTML = recs.map(item => `
+        <button class="rec ${item.grade}" type="button" data-id="${item.id}">
+          <div class="title">${escapeHtml(item.title)}</div>
+          <div class="meta">
+            <span class="pill">${escapeHtml(item.source)}</span>
+            <span class="pill">${escapeHtml(item.category)}</span>
+            <span class="pill">${item.price ? `HK$${item.price.toLocaleString()}` : "open thread"}</span>
+            <span class="pill score">${recommendationScore(item)} score</span>
+          </div>
+        </button>
+      `).join("");
+
+      els.recommendations.querySelectorAll(".rec").forEach(button => {
+        button.addEventListener("click", () => selectListing(button.dataset.id));
+      });
+
+      const items = filteredListings();
+      els.listingList.innerHTML = items.map(item => `
+        <button class="item ${item.id === selectedId ? "active" : ""}" type="button" data-id="${item.id}">
+          <span class="title">${escapeHtml(item.title)}</span>
+          <span class="meta">
+            <span class="pill">${escapeHtml(item.source)}</span>
+            <span class="pill">${escapeHtml(item.grade)}</span>
+            <span class="pill price">${item.price ? `HK$${item.price.toLocaleString()}` : "price in thread"}</span>
+            <span class="pill">${escapeHtml(item.age)}</span>
+          </span>
+        </button>
+      `).join("") || `<div class="empty">No matching listings.</div>`;
+
+      els.listingList.querySelectorAll(".item").forEach(button => {
+        button.addEventListener("click", () => selectListing(button.dataset.id));
+      });
+    }
+
+    function selectListing(id) {
+      const item = listings.find(entry => entry.id === id);
+      if (!item) return;
+      selectedId = id;
+      render();
+      const delta = item.price && item.benchmark ? item.benchmark - item.price : null;
+      els.detailMeta.textContent = `${item.source} · ${item.category} · ${item.age}`;
+      els.detailTitle.textContent = item.title;
+      els.detailLink.href = item.url;
+      els.detailBody.innerHTML = `
+        <div class="grid">
+          <section class="box"><h3>Asking price</h3><p class="price">${item.price ? `HK$${item.price.toLocaleString()}` : "Open HKEPC thread to confirm"}</p></section>
+          <section class="box"><h3>Observer grade</h3><p>${gradeText(item.grade)} · score ${recommendationScore(item)}</p></section>
+          <section class="box"><h3>Reference price</h3><p>${item.benchmark ? `HK$${item.benchmark.toLocaleString()} watch threshold` : "Needs manual benchmark"}</p></section>
+          <section class="box"><h3>Estimated edge</h3><p>${delta === null ? "Unknown until price is confirmed" : delta > 0 ? `HK$${delta.toLocaleString()} below threshold` : `HK$${Math.abs(delta).toLocaleString()} above threshold`}</p></section>
+          <section class="box"><h3>Seller / source</h3><p>${escapeHtml(item.seller)} · ${escapeHtml(item.source)}</p></section>
+          <section class="box"><h3>Buy-check notes</h3><p>Ask for stress test, temperature screenshot, invoice/warranty, serial photo, ports/fan condition, and exact pickup location before committing.</p></section>
+        </div>
+        <section class="box" style="margin-top:12px;"><h3>Market observer note</h3><p>${escapeHtml(item.reason)}</p></section>
+      `;
+    }
+
+    function gradeText(grade) {
+      if (grade === "good") return "Recommend checking";
+      if (grade === "watch") return "Watch / negotiate";
+      return "Skip or low priority";
+    }
+
+    function exportWatchlist() {
+      const blob = new Blob([JSON.stringify({ exported_at: new Date().toISOString(), listings }, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `hk-used-hardware-watch-${new Date().toISOString().slice(0, 10)}.json`;
+      link.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+  </script>
+</body>
+</html>
