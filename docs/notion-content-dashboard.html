@@ -1,0 +1,760 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Notion Content Dashboard</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f4f2ee;
+      --panel: #fffdf8;
+      --panel-2: #ebe7df;
+      --ink: #202124;
+      --muted: #6f6a61;
+      --line: #d8d1c5;
+      --teal: #0f766e;
+      --blue: #2563eb;
+      --amber: #b45309;
+      --rose: #be123c;
+      --green: #15803d;
+      --shadow: 0 18px 48px rgba(35, 30, 22, .12);
+    }
+
+    [data-theme="dark"] {
+      color-scheme: dark;
+      --bg: #121314;
+      --panel: #1d1f20;
+      --panel-2: #292b2d;
+      --ink: #f4f1ec;
+      --muted: #b5ada4;
+      --line: #3b3e40;
+      --teal: #5eead4;
+      --blue: #93c5fd;
+      --amber: #fbbf24;
+      --rose: #fb7185;
+      --green: #86efac;
+      --shadow: 0 18px 48px rgba(0, 0, 0, .38);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0;
+    }
+
+    button, input, select {
+      font: inherit;
+    }
+
+    button {
+      min-height: 40px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      color: var(--ink);
+      padding: 9px 12px;
+      cursor: pointer;
+    }
+
+    button:hover, input:focus, select:focus {
+      border-color: var(--teal);
+      outline: 0;
+    }
+
+    .app {
+      width: min(1440px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 20px 0 42px;
+    }
+
+    header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: end;
+      padding: 14px 0 20px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(34px, 5vw, 68px);
+      line-height: .98;
+      font-weight: 800;
+    }
+
+    .lede {
+      margin: 10px 0 0;
+      color: var(--muted);
+      line-height: 1.5;
+      max-width: 740px;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .primary {
+      background: var(--teal);
+      border-color: var(--teal);
+      color: #061312;
+      font-weight: 750;
+    }
+
+    [data-theme="light"] .primary {
+      color: #fff;
+    }
+
+    .status {
+      margin-top: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      color: var(--muted);
+      box-shadow: var(--shadow);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .stat {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      padding: 16px;
+      min-height: 112px;
+      box-shadow: var(--shadow);
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 36px;
+      line-height: 1;
+      margin-bottom: 10px;
+    }
+
+    .stat span {
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: 360px minmax(0, 1fr);
+      gap: 14px;
+      margin-top: 14px;
+      min-height: 660px;
+    }
+
+    .sidebar, .detail {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      min-width: 0;
+    }
+
+    .sidebar {
+      display: grid;
+      grid-template-rows: auto 1fr;
+      overflow: hidden;
+    }
+
+    .filters {
+      display: grid;
+      gap: 10px;
+      padding: 14px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    input, select {
+      width: 100%;
+      min-height: 42px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel-2);
+      color: var(--ink);
+      padding: 10px 11px;
+    }
+
+    .list {
+      overflow: auto;
+      padding: 8px;
+    }
+
+    .item {
+      width: 100%;
+      display: grid;
+      gap: 6px;
+      text-align: left;
+      border: 1px solid transparent;
+      background: transparent;
+      padding: 12px;
+      min-height: 82px;
+    }
+
+    .item:hover, .item.active {
+      background: var(--panel-2);
+      border-color: var(--line);
+    }
+
+    .item-title {
+      font-weight: 760;
+      line-height: 1.25;
+      overflow-wrap: anywhere;
+    }
+
+    .item-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .pill {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 3px 8px;
+      background: color-mix(in srgb, var(--panel), var(--panel-2) 60%);
+      max-width: 100%;
+      overflow-wrap: anywhere;
+    }
+
+    .detail {
+      overflow: hidden;
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+
+    .detail-head {
+      padding: 22px;
+      border-bottom: 1px solid var(--line);
+      background:
+        linear-gradient(90deg, color-mix(in srgb, var(--teal), transparent 82%), transparent 52%),
+        var(--panel);
+    }
+
+    .breadcrumb {
+      margin: 0 0 10px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .detail-title {
+      margin: 0;
+      font-size: clamp(28px, 4vw, 52px);
+      line-height: 1.04;
+      overflow-wrap: anywhere;
+    }
+
+    .detail-link {
+      display: inline-block;
+      margin-top: 12px;
+      color: var(--blue);
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    .detail-body {
+      padding: 18px;
+      overflow: auto;
+    }
+
+    .property-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .prop {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: color-mix(in srgb, var(--panel), var(--panel-2) 38%);
+      padding: 13px;
+      min-height: 78px;
+    }
+
+    .prop-name {
+      margin: 0 0 8px;
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      font-weight: 800;
+    }
+
+    .prop-value {
+      margin: 0;
+      line-height: 1.45;
+      overflow-wrap: anywhere;
+      white-space: pre-wrap;
+    }
+
+    .empty {
+      display: grid;
+      place-items: center;
+      min-height: 420px;
+      padding: 24px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .empty h2 {
+      margin: 0 0 8px;
+      color: var(--ink);
+      font-size: 24px;
+    }
+
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .bar {
+      height: 56px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      display: grid;
+      align-items: end;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      background: linear-gradient(180deg, var(--teal), var(--blue));
+      min-height: 4px;
+    }
+
+    .bar span {
+      position: absolute;
+      opacity: 0;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @media (max-width: 980px) {
+      header, .workspace, .stats, .property-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .actions {
+        justify-content: flex-start;
+      }
+
+      .workspace {
+        min-height: auto;
+      }
+    }
+  </style>
+</head>
+<body data-theme="dark">
+  <main class="app">
+    <header>
+      <div>
+        <h1>Notion Content Dashboard</h1>
+        <p class="lede">A clean home for browsing your backed-up Notion database: overview first, details one click away.</p>
+      </div>
+      <div class="actions">
+        <button id="themeToggle" type="button">Dark</button>
+        <button id="importButton" type="button">Import JSON</button>
+        <button id="refreshButton" type="button" class="primary">Refresh</button>
+        <input id="fileInput" class="hidden" type="file" accept="application/json">
+      </div>
+    </header>
+
+    <section class="status">
+      <span id="sourceLabel">Loading latest Notion backup from GitHub...</span>
+      <span id="updatedLabel">-</span>
+    </section>
+
+    <section class="stats">
+      <div class="stat"><strong id="pageCount">0</strong><span>Pages</span></div>
+      <div class="stat"><strong id="propertyCount">0</strong><span>Properties</span></div>
+      <div class="stat"><strong id="statusCount">0</strong><span>Status Values</span></div>
+      <div class="stat"><strong id="recentCount">0</strong><span>Recent Updates</span></div>
+    </section>
+
+    <section class="timeline" id="timeline" aria-label="Recent update chart"></section>
+
+    <section class="workspace">
+      <aside class="sidebar">
+        <div class="filters">
+          <input id="searchInput" type="search" placeholder="Search title or properties">
+          <select id="statusFilter" aria-label="Filter by status">
+            <option value="">All status values</option>
+          </select>
+        </div>
+        <div id="pageList" class="list" aria-live="polite"></div>
+      </aside>
+
+      <article class="detail">
+        <div class="detail-head">
+          <p class="breadcrumb" id="detailMeta">Select a page</p>
+          <h2 class="detail-title" id="detailTitle">Your Notion pages will appear here</h2>
+          <a class="detail-link hidden" id="detailLink" href="#" target="_blank" rel="noreferrer">Open in Notion</a>
+        </div>
+        <div class="detail-body" id="detailBody">
+          <div class="empty">
+            <div>
+              <h2>No page selected</h2>
+              <p>Choose an item on the left to inspect all captured Notion properties.</p>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    const repoOwner = "victorsiuchung";
+    const repoName = "my-personal-os";
+    const backupDirApi = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/backups/notion?ref=main`;
+    const themeKey = "notionContentDashboard.theme";
+
+    let backup = null;
+    let pages = [];
+    let selectedId = "";
+
+    const els = {
+      themeToggle: document.querySelector("#themeToggle"),
+      importButton: document.querySelector("#importButton"),
+      refreshButton: document.querySelector("#refreshButton"),
+      fileInput: document.querySelector("#fileInput"),
+      sourceLabel: document.querySelector("#sourceLabel"),
+      updatedLabel: document.querySelector("#updatedLabel"),
+      pageCount: document.querySelector("#pageCount"),
+      propertyCount: document.querySelector("#propertyCount"),
+      statusCount: document.querySelector("#statusCount"),
+      recentCount: document.querySelector("#recentCount"),
+      searchInput: document.querySelector("#searchInput"),
+      statusFilter: document.querySelector("#statusFilter"),
+      pageList: document.querySelector("#pageList"),
+      detailMeta: document.querySelector("#detailMeta"),
+      detailTitle: document.querySelector("#detailTitle"),
+      detailLink: document.querySelector("#detailLink"),
+      detailBody: document.querySelector("#detailBody"),
+      timeline: document.querySelector("#timeline")
+    };
+
+    document.body.dataset.theme = localStorage.getItem(themeKey) || "dark";
+    els.themeToggle.textContent = document.body.dataset.theme === "dark" ? "Dark" : "Light";
+
+    els.themeToggle.addEventListener("click", () => {
+      const next = document.body.dataset.theme === "dark" ? "light" : "dark";
+      document.body.dataset.theme = next;
+      localStorage.setItem(themeKey, next);
+      els.themeToggle.textContent = next === "dark" ? "Dark" : "Light";
+    });
+
+    els.refreshButton.addEventListener("click", loadLatestBackup);
+    els.importButton.addEventListener("click", () => els.fileInput.click());
+    els.fileInput.addEventListener("change", importBackup);
+    els.searchInput.addEventListener("input", renderList);
+    els.statusFilter.addEventListener("change", renderList);
+    window.addEventListener("hashchange", selectFromHash);
+
+    loadLatestBackup();
+
+    async function loadLatestBackup() {
+      setStatus("Loading latest Notion backup from GitHub...", "-");
+      try {
+        const response = await fetch(backupDirApi);
+        if (!response.ok) throw new Error(`GitHub returned ${response.status}`);
+        const files = await response.json();
+        const jsonFiles = files
+          .filter(file => file.name.endsWith(".json") && file.download_url)
+          .sort((a, b) => b.name.localeCompare(a.name));
+
+        if (!jsonFiles.length) {
+          setEmptySource("No backup JSON files found in backups/notion. Run the backup workflow or import a JSON file.");
+          return;
+        }
+
+        const latest = jsonFiles[0];
+        const backupResponse = await fetch(latest.download_url);
+        if (!backupResponse.ok) throw new Error(`Backup returned ${backupResponse.status}`);
+        const data = await backupResponse.json();
+        applyBackup(data, `GitHub backup: ${latest.name}`);
+      } catch (error) {
+        setEmptySource(`Could not load GitHub backup. Import a JSON backup manually. ${error.message}`);
+      }
+    }
+
+    function importBackup(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          applyBackup(JSON.parse(reader.result), `Imported file: ${file.name}`);
+        } catch (error) {
+          setEmptySource(`Could not parse JSON file. ${error.message}`);
+        }
+      };
+      reader.readAsText(file);
+      event.target.value = "";
+    }
+
+    function applyBackup(data, source) {
+      backup = data;
+      pages = Array.isArray(data.pages) ? data.pages : [];
+      pages.sort((a, b) => new Date(b.last_edited_time || 0) - new Date(a.last_edited_time || 0));
+      setStatus(source, formatDate(data.backup_created_at || new Date().toISOString()));
+      populateStatusFilter();
+      renderStats();
+      renderTimeline();
+      renderList();
+      selectFromHash();
+      if (!selectedId && pages[0]) selectPage(pages[0].id);
+    }
+
+    function setEmptySource(message) {
+      backup = null;
+      pages = [];
+      selectedId = "";
+      setStatus(message, "-");
+      populateStatusFilter();
+      renderStats();
+      renderTimeline();
+      renderList();
+      renderEmptyDetail("No backup loaded", "Run your weekly Notion backup workflow, then refresh this page. You can also import a backup JSON file.");
+    }
+
+    function setStatus(source, updated) {
+      els.sourceLabel.textContent = source;
+      els.updatedLabel.textContent = updated;
+    }
+
+    function titleForPage(page) {
+      const props = page.properties || {};
+      for (const prop of Object.values(props)) {
+        if (prop.type === "title") {
+          const title = richText(prop.title);
+          if (title) return title;
+        }
+      }
+      return "Untitled";
+    }
+
+    function richText(items) {
+      return (items || []).map(item => item.plain_text || "").join("").trim();
+    }
+
+    function propertyValue(prop) {
+      if (!prop) return "";
+      switch (prop.type) {
+        case "title": return richText(prop.title);
+        case "rich_text": return richText(prop.rich_text);
+        case "status": return prop.status?.name || "";
+        case "select": return prop.select?.name || "";
+        case "multi_select": return (prop.multi_select || []).map(item => item.name).join(", ");
+        case "date": return prop.date?.start ? `${prop.date.start}${prop.date.end ? " to " + prop.date.end : ""}` : "";
+        case "checkbox": return prop.checkbox ? "Yes" : "No";
+        case "number": return prop.number ?? "";
+        case "url": return prop.url || "";
+        case "email": return prop.email || "";
+        case "phone_number": return prop.phone_number || "";
+        case "people": return (prop.people || []).map(person => person.name || person.id).join(", ");
+        case "files": return (prop.files || []).map(file => file.name).join(", ");
+        case "relation": return `${(prop.relation || []).length} related`;
+        case "formula": return stringifyFormula(prop.formula);
+        case "rollup": return "Rollup";
+        case "created_time": return formatDate(prop.created_time);
+        case "last_edited_time": return formatDate(prop.last_edited_time);
+        case "created_by": return prop.created_by?.name || prop.created_by?.id || "";
+        case "last_edited_by": return prop.last_edited_by?.name || prop.last_edited_by?.id || "";
+        default: return JSON.stringify(prop[prop.type] ?? "");
+      }
+    }
+
+    function stringifyFormula(formula) {
+      if (!formula) return "";
+      if (formula.type === "string") return formula.string || "";
+      if (formula.type === "number") return formula.number ?? "";
+      if (formula.type === "boolean") return formula.boolean ? "True" : "False";
+      if (formula.type === "date") return formula.date?.start || "";
+      return "";
+    }
+
+    function statusForPage(page) {
+      const props = page.properties || {};
+      const statusProp = Object.values(props).find(prop => prop.type === "status" || prop.type === "select");
+      return propertyValue(statusProp);
+    }
+
+    function searchableText(page) {
+      const propText = Object.values(page.properties || {}).map(propertyValue).join(" ");
+      return `${titleForPage(page)} ${propText}`.toLowerCase();
+    }
+
+    function filteredPages() {
+      const query = els.searchInput.value.trim().toLowerCase();
+      const status = els.statusFilter.value;
+      return pages.filter(page => {
+        const matchesSearch = !query || searchableText(page).includes(query);
+        const matchesStatus = !status || statusForPage(page) === status;
+        return matchesSearch && matchesStatus;
+      });
+    }
+
+    function populateStatusFilter() {
+      const statuses = [...new Set(pages.map(statusForPage).filter(Boolean))].sort();
+      els.statusFilter.innerHTML = `<option value="">All status values</option>` +
+        statuses.map(status => `<option value="${escapeHtml(status)}">${escapeHtml(status)}</option>`).join("");
+    }
+
+    function renderStats() {
+      const propNames = new Set();
+      pages.forEach(page => Object.keys(page.properties || {}).forEach(name => propNames.add(name)));
+      const statuses = new Set(pages.map(statusForPage).filter(Boolean));
+      const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+      const recent = pages.filter(page => new Date(page.last_edited_time || 0).getTime() >= sevenDaysAgo);
+
+      els.pageCount.textContent = pages.length;
+      els.propertyCount.textContent = propNames.size;
+      els.statusCount.textContent = statuses.size;
+      els.recentCount.textContent = recent.length;
+    }
+
+    function renderTimeline() {
+      const buckets = Array.from({ length: 7 }, (_, index) => {
+        const date = new Date();
+        date.setDate(date.getDate() - (6 - index));
+        const key = date.toISOString().slice(0, 10);
+        return { key, count: 0 };
+      });
+
+      pages.forEach(page => {
+        const key = (page.last_edited_time || "").slice(0, 10);
+        const bucket = buckets.find(item => item.key === key);
+        if (bucket) bucket.count += 1;
+      });
+
+      const max = Math.max(1, ...buckets.map(item => item.count));
+      els.timeline.innerHTML = buckets.map(item => {
+        const height = Math.max(8, Math.round((item.count / max) * 56));
+        return `<div class="bar" title="${item.key}: ${item.count} updates"><div class="bar-fill" style="height:${height}px"></div><span>${item.count}</span></div>`;
+      }).join("");
+    }
+
+    function renderList() {
+      const items = filteredPages();
+      if (!items.length) {
+        els.pageList.innerHTML = `<div class="empty"><div><h2>No matches</h2><p>Try a different search or status filter.</p></div></div>`;
+        return;
+      }
+
+      els.pageList.innerHTML = items.map(page => {
+        const title = titleForPage(page);
+        const status = statusForPage(page);
+        const edited = formatDate(page.last_edited_time);
+        const active = page.id === selectedId ? " active" : "";
+        return `
+          <button class="item${active}" type="button" data-id="${page.id}">
+            <span class="item-title">${escapeHtml(title)}</span>
+            <span class="item-meta">
+              ${status ? `<span class="pill">${escapeHtml(status)}</span>` : ""}
+              <span class="pill">${escapeHtml(edited)}</span>
+            </span>
+          </button>
+        `;
+      }).join("");
+
+      els.pageList.querySelectorAll(".item").forEach(item => {
+        item.addEventListener("click", () => selectPage(item.dataset.id));
+      });
+    }
+
+    function selectFromHash() {
+      const id = decodeURIComponent(location.hash.replace(/^#page=/, ""));
+      if (id && pages.some(page => page.id === id)) selectPage(id, false);
+    }
+
+    function selectPage(id, updateHash = true) {
+      const page = pages.find(item => item.id === id);
+      if (!page) return;
+      selectedId = id;
+      if (updateHash) history.replaceState(null, "", `#page=${encodeURIComponent(id)}`);
+      renderList();
+      renderDetail(page);
+    }
+
+    function renderDetail(page) {
+      const title = titleForPage(page);
+      els.detailMeta.textContent = `Last edited ${formatDate(page.last_edited_time)} · Created ${formatDate(page.created_time)}`;
+      els.detailTitle.textContent = title;
+      if (page.url) {
+        els.detailLink.href = page.url;
+        els.detailLink.classList.remove("hidden");
+      } else {
+        els.detailLink.classList.add("hidden");
+      }
+
+      const props = Object.entries(page.properties || {});
+      els.detailBody.innerHTML = `
+        <div class="property-grid">
+          ${props.map(([name, prop]) => `
+            <section class="prop">
+              <p class="prop-name">${escapeHtml(name)} · ${escapeHtml(prop.type || "unknown")}</p>
+              <p class="prop-value">${escapeHtml(String(propertyValue(prop) || "—"))}</p>
+            </section>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    function renderEmptyDetail(title, body) {
+      els.detailMeta.textContent = "No data";
+      els.detailTitle.textContent = title;
+      els.detailLink.classList.add("hidden");
+      els.detailBody.innerHTML = `<div class="empty"><div><h2>${escapeHtml(title)}</h2><p>${escapeHtml(body)}</p></div></div>`;
+    }
+
+    function formatDate(value) {
+      if (!value) return "-";
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return String(value);
+      return date.toLocaleString([], { dateStyle: "medium", timeStyle: "short" });
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+  </script>
+</body>
+</html>
