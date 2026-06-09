@@ -86,11 +86,25 @@ https://victorsiuchung.github.io/my-personal-os/hk-stock-analyst-dashboard.html
 
 在頁面按 `Connect Futu API`，即可嘗試讀取本機 `127.0.0.1:8765`。
 
+預設按鈕 `Connect HSI Futu API` 會只掃描恆生指數 93 隻成份股，速度比全市場掃描快，亦更適合先做高流動性股票分析。
+
+如果要掃描全市場，可按 `Full market API`，或直接呼叫：
+
+```text
+http://127.0.0.1:8765/api/recommendations?refresh=1&scope=market
+```
+
+恆指成份股 API：
+
+```text
+http://127.0.0.1:8765/api/recommendations?refresh=1&scope=hsi
+```
+
 ## 交易計劃價位
 
 系統會根據 K 線估算：
 
-- 買入價：目前實時價 / 快照價
+- 買入價：較保守的目標入場位，通常是現價下方約 1% 或靠近 MA5 / MA20 的回調位置
 - 止蝕價：MA20 / 20 日低位支撐下方
 - 止賺一階：風險回報約 1.5R 或近期阻力
 - 止賺二階：風險回報約 2.5R
