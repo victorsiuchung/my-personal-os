@@ -24,6 +24,7 @@ from tqdm import tqdm
 from config import (
     CACHE_DIR,
     CHECKPOINT_FILE,
+    HSI_CONSTITUENTS,
     KLINE_CACHE_SECONDS,
     KLINE_COUNT,
     MARKET,
@@ -86,6 +87,19 @@ class StockScanner:
         stats = {
             "total_count": total_count,
             "filtered_count": filtered_count,
+            "analyzed_count": len(results),
+        }
+        return results, stats
+
+    def scan_hsi(self) -> tuple[list[dict[str, Any]], dict[str, int]]:
+        """只掃描恆生指數成份股，適合較快產生高流動性股票推介。"""
+        CACHE_DIR.mkdir(parents=True, exist_ok=True)
+        stock_list = pd.DataFrame({"code": HSI_CONSTITUENTS})
+        filtered_df = self.apply_fast_filters(stock_list)
+        results = self.scan_candidates(filtered_df)
+        stats = {
+            "total_count": len(stock_list),
+            "filtered_count": len(filtered_df),
             "analyzed_count": len(results),
         }
         return results, stats
