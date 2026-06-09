@@ -2,26 +2,42 @@ name: Sync to Notion
 
 on:
   push:
-  issues:
-    types:
-      - opened
-      - edited
-      - closed
-      - reopened
-      - assigned
-      - unassigned
-      - labeled
-      - unlabeled
 
 jobs:
-  sync-to-notion:
+  create-notion-task:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Sync placeholder
+      - name: Create Notion task from commit message
+        env:
+          NOTION_SECRET: ${{ secrets.NOTION_SECRET }}
+          NOTION_DATABASE: ${{ secrets.NOTION_DATABASE }}
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
         run: |
-          echo "Sync to Notion workflow triggered"
-          echo "Event: ${{ github.event_name }}"
+          NOW=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+          jq -n \
+            --arg database_id "$NOTION_DATABASE" \
+            --arg title "$COMMIT_MESSAGE" \
+            --arg now "$NOW" \
+            '{
+              parent: { database_id: $database_id },
+              properties: {
+                Name: {
+                  title: [
+                    {
+                      text: { content: $title }
+                    }
+                  ]
+                },
+                Date: {
+                  date: { start: $now }
+                }
+              }
+            }' > notion-payload.json
+
+          curl --fail-with-body -X POST "https://api.notion.com/v1/pages" \
+            -H "Authorization: Bearer $NOTION_SECRET" \
+            -H "Content-Type: application/json" \
+            -H "Notion-Version: 2022-06-28" \
+            --data @notion-payload.json
