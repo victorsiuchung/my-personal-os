@@ -387,7 +387,7 @@
     </header>
 
     <section class="status">
-      <span>Snapshot: 2026-06-09 · Sources: Carousell HK, eBay sold, Beelive TCG, PriceCharting, PokePrices, CardIndex</span>
+      <span>Snapshot: 2026-06-09 · Sources: Carousell HK, eBay sold, Beelive TCG, TT Poke, Cardex, CardCornerX, General CardShop</span>
       <span>Verify condition, language, edition, and authenticity</span>
     </section>
 
@@ -395,7 +395,7 @@
       <div class="stat"><strong id="listingCount">0</strong><span>Tracked cards</span></div>
       <div class="stat"><strong id="goodCount">0</strong><span>Recommend checks</span></div>
       <div class="stat"><strong id="avgPrice">-</strong><span>Average priced card</span></div>
-      <div class="stat"><strong>6</strong><span>Reference sources</span></div>
+      <div class="stat"><strong>10</strong><span>Reference sources</span></div>
     </section>
 
     <section class="layout">
@@ -444,6 +444,10 @@
       carousell: "https://www.carousell.com.hk/search/pokemon%20card",
       ebaySold: "https://www.ebay.com/sch/i.html?_nkw=pokemon+card&LH_Complete=1&LH_Sold=1",
       beelive: "https://beelivetcg.com/",
+      ttPoke: "https://www.tt-poke.com/en",
+      cardex: "https://www.cardex.trading/",
+      cardCornerX: "https://cardcornerx.com/",
+      generalCard: "https://linktr.ee/generalcard",
       pricecharting: "https://www.pricecharting.com/category/pokemon-cards",
       pokeprices: "https://www.pokeprices.io/",
       cardindex: "https://www.cardindex.co/"
@@ -454,6 +458,10 @@
       { name: "Carousell HK Pokemon Cards", url: urls.carousell, note: "Local second-hand listings. Treat as asking/listing comps unless clearly sold or reserved." },
       { name: "eBay Sold Listings", url: urls.ebaySold, note: "Actual completed/sold comps. Add shipping, FX, taxes, and authenticity risk before comparing with HK." },
       { name: "Beelive TCG", url: urls.beelive, note: "Hong Kong TCG retail/local reference for sealed products, singles, and market availability." },
+      { name: "TT Poke", url: urls.ttPoke, note: "Hong Kong Pokemon TCG supplier with PSA graded cards, raw cards, sealed boxes, and collector trading references." },
+      { name: "Cardex Marketplace", url: urls.cardex, note: "Chinese/HK-friendly TCG marketplace with sealed products, singles, collectibles, and community second-hand trading." },
+      { name: "CardCornerX", url: urls.cardCornerX, note: "Buy/sell/trade Pokemon singles, slabs, and sealed products. Useful local/Asia market reference." },
+      { name: "General CardShop / Card Express", url: urls.generalCard, note: "Local shop/social channels including online shop, Facebook, Instagram, and Carousell references." },
       { name: "PriceCharting Pokemon", url: urls.pricecharting, note: "Raw and graded historical price guide, useful for PSA 9/10 versus raw checks." },
       { name: "PokePrices", url: urls.pokeprices, note: "Pokemon price checker with raw value, PSA 10 premium, gem rate, and nightly tracked sold data." },
       { name: "CardIndex", url: urls.cardindex, note: "Real-time Pokemon card prices and sales data across graded companies." }
@@ -464,6 +472,10 @@
       { id: "ebay-sold-pikachu-masterball", source: "eBay sold", type: "graded/raw", title: "Pikachu Master Ball Reverse 025/165 sold comp watch", card: "Pikachu Master Ball Reverse", set: "Pokemon 151 JP", price: null, fairRange: "use recent sold only", grade: "watch", url: "https://www.ebay.com/sch/i.html?_nkw=pikachu+master+ball+reverse+025%2F165&LH_Complete=1&LH_Sold=1", soldComp: "Use only sold listings with clear photos and matching Japanese 151 master ball pattern.", reason: "Highly condition-sensitive. Good candidate only if centering and surface are clean enough for grading upside." },
       { id: "carousell-151-box", source: "Carousell HK", type: "sealed", title: "Pokemon 151 booster box local watch", card: "Pokemon 151 Booster Box", set: "Pokemon 151", price: null, fairRange: "compare with Beelive/retail/eBay sold", grade: "watch", url: "https://www.carousell.com.hk/search/pokemon%20151%20booster%20box", soldComp: "Compare local sealed asking price with Beelive TCG and eBay sold. Avoid boxes without shrink or with reseal risk.", reason: "Sealed product can be liquid, but reseal risk is real. Buy only from reputable seller or retail-like source." },
       { id: "beelive-modern-singles", source: "Beelive TCG", type: "retail reference", title: "Modern singles retail reference", card: "Modern Pokemon singles", set: "mixed", price: null, fairRange: "retail anchor", grade: "watch", url: "https://beelivetcg.com/", soldComp: "Use as local retail/reference anchor, not necessarily the cheapest market price.", reason: "Useful to avoid overpaying on Carousell when local shop stock is available with clearer condition." },
+      { id: "ttpoke-psa-slabs", source: "TT Poke", type: "graded / P2P reference", title: "TT Poke PSA graded card watch", card: "PSA slabs", set: "mixed", price: null, fairRange: "local slab anchor", grade: "watch", url: "https://www.tt-poke.com/en", soldComp: "Use TT Poke as a local slab availability and P2P trading reference, then verify against eBay sold and CardIndex.", reason: "Good source for Hong Kong graded card context. Watch for slabs where local asking is below international sold comps after fees." },
+      { id: "cardex-community-market", source: "Cardex Marketplace", type: "community marketplace", title: "Cardex community second-hand watch", card: "Singles / sealed / collectibles", set: "mixed", price: null, fairRange: "local marketplace anchor", grade: "watch", url: "https://www.cardex.trading/", soldComp: "Use Cardex marketplace listings as Chinese/HK-friendly local comps. Still verify final成交 and seller history.", reason: "Adds another local supply signal beyond Carousell. Useful for checking whether a Carousell deal is actually cheap or just normal local price." },
+      { id: "cardcornerx-singles-slabs", source: "CardCornerX", type: "shop / trade reference", title: "CardCornerX singles and slabs watch", card: "Singles / slabs / sealed", set: "mixed", price: null, fairRange: "shop/trade anchor", grade: "watch", url: "https://cardcornerx.com/", soldComp: "Use as shop/trade reference for Pokemon singles, slabs and sealed. Compare with eBay sold before paying shop premium.", reason: "Helpful for sanity-checking local shop pricing and availability before meeting private sellers." },
+      { id: "generalcard-social-channels", source: "General CardShop", type: "social shop reference", title: "General CardShop / Card Express social watch", card: "Singles / sealed / local stock", set: "mixed", price: null, fairRange: "social channel anchor", grade: "watch", url: "https://linktr.ee/generalcard", soldComp: "Use linked Carousell, Facebook, IG, and online shop channels as local supply references. Treat social posts as asking prices until confirmed sold.", reason: "Useful for catching local shop drops and checking if a supposedly rare item is actually available elsewhere." },
       { id: "carousell-psa10-moonbreon", source: "Carousell HK", type: "graded", title: "Umbreon VMAX Alt Art PSA 10 watch", card: "Umbreon VMAX Alt Art", set: "Evolving Skies", price: null, fairRange: "verify with eBay sold and CardIndex", grade: "watch", url: "https://www.carousell.com.hk/search/Umbreon%20VMAX%20PSA%2010", soldComp: "High-value card; verify cert number, PSA case, seller history, and recent eBay/CardIndex comps.", reason: "Only worth considering when local price is clearly below international sold comps and authentication is clean." },
       { id: "carousell-raw-charizard-base", source: "Carousell HK", type: "raw vintage", title: "Base Set Charizard raw watch", card: "Charizard Base Set", set: "Base Set", price: null, fairRange: "condition decides everything", grade: "skip", url: "https://www.carousell.com.hk/search/base%20set%20charizard", soldComp: "Raw vintage pricing depends on condition. Compare to PriceCharting and eBay sold by condition, not average.", reason: "High fake/damage risk. Skip unless photos are excellent and seller accepts in-person inspection." },
       { id: "ebay-sold-trainer-sar", source: "eBay sold", type: "raw", title: "Japanese SAR trainer sold comp watch", card: "Japanese SAR Trainer", set: "modern JP", price: null, fairRange: "recent sold average", grade: "watch", url: "https://www.ebay.com/sch/i.html?_nkw=pokemon+japanese+sar+trainer&LH_Complete=1&LH_Sold=1", soldComp: "Use recent sold comps; avoid outliers from auctions with poor titles or fake sales.", reason: "Good for spotting local underpriced Japanese singles, but must match card number and language exactly." },
