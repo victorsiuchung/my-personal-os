@@ -7,41 +7,48 @@
   <style>
     :root {
       color-scheme: light;
-      --bg: #f4f2ee;
-      --panel: #fffdf8;
-      --panel-2: #ebe7df;
-      --ink: #202124;
-      --muted: #6f6a61;
-      --line: #d8d1c5;
+      --bg: #fafafa;
+      --panel: #ffffff;
+      --panel-2: #f4f4f5;
+      --panel-3: #e4e4e7;
+      --ink: #09090b;
+      --muted: #71717a;
+      --line: #e4e4e7;
+      --ring: #18181b;
       --teal: #0f766e;
       --blue: #2563eb;
       --amber: #b45309;
-      --rose: #be123c;
-      --green: #15803d;
-      --shadow: 0 18px 48px rgba(35, 30, 22, .12);
+      --rose: #e11d48;
+      --green: #16a34a;
+      --shadow: 0 1px 2px rgba(24, 24, 27, .06), 0 8px 24px rgba(24, 24, 27, .06);
     }
 
     [data-theme="dark"] {
       color-scheme: dark;
-      --bg: #121314;
-      --panel: #1d1f20;
-      --panel-2: #292b2d;
-      --ink: #f4f1ec;
-      --muted: #b5ada4;
-      --line: #3b3e40;
+      --bg: #09090b;
+      --panel: #0f0f12;
+      --panel-2: #18181b;
+      --panel-3: #27272a;
+      --ink: #fafafa;
+      --muted: #a1a1aa;
+      --line: #27272a;
+      --ring: #e4e4e7;
       --teal: #5eead4;
       --blue: #93c5fd;
       --amber: #fbbf24;
       --rose: #fb7185;
       --green: #86efac;
-      --shadow: 0 18px 48px rgba(0, 0, 0, .38);
+      --shadow: 0 1px 2px rgba(0, 0, 0, .36), 0 14px 36px rgba(0, 0, 0, .26);
     }
 
     * { box-sizing: border-box; }
     body {
       margin: 0;
       min-height: 100vh;
-      background: var(--bg);
+      background:
+        radial-gradient(circle at top left, color-mix(in srgb, var(--blue), transparent 88%), transparent 32rem),
+        radial-gradient(circle at top right, color-mix(in srgb, var(--teal), transparent 88%), transparent 30rem),
+        var(--bg);
       color: var(--ink);
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       letter-spacing: 0;
@@ -57,35 +64,61 @@
       border-radius: 8px;
       background: var(--panel);
       color: var(--ink);
-      padding: 9px 12px;
+      padding: 9px 13px;
       cursor: pointer;
+      font-size: 14px;
+      font-weight: 650;
+      transition: border-color .15s ease, background .15s ease, transform .15s ease;
     }
 
     button:hover, input:focus, select:focus {
-      border-color: var(--teal);
+      border-color: color-mix(in srgb, var(--ring), transparent 28%);
       outline: 0;
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--ring), transparent 88%);
+    }
+
+    button:hover {
+      background: var(--panel-2);
+    }
+
+    button:active {
+      transform: translateY(1px);
     }
 
     .app {
-      width: min(1440px, calc(100vw - 32px));
+      width: min(1380px, calc(100vw - 32px));
       margin: 0 auto;
-      padding: 20px 0 42px;
+      padding: 22px 0 44px;
     }
 
     header {
       display: grid;
       grid-template-columns: 1fr auto;
       gap: 16px;
-      align-items: end;
-      padding: 14px 0 20px;
+      align-items: center;
+      padding: 12px 0 20px;
       border-bottom: 1px solid var(--line);
     }
 
     h1 {
       margin: 0;
-      font-size: clamp(34px, 5vw, 68px);
-      line-height: .98;
+      font-size: clamp(30px, 4vw, 52px);
+      line-height: 1;
       font-weight: 800;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--panel), transparent 8%);
+      color: var(--muted);
+      padding: 5px 10px;
+      font-size: 12px;
+      font-weight: 750;
     }
 
     .lede {
@@ -104,14 +137,15 @@
     }
 
     .primary {
-      background: var(--teal);
-      border-color: var(--teal);
-      color: #061312;
+      background: var(--ink);
+      border-color: var(--ink);
+      color: var(--bg);
       font-weight: 750;
     }
 
-    [data-theme="light"] .primary {
-      color: #fff;
+    .primary:hover {
+      background: color-mix(in srgb, var(--ink), transparent 12%);
+      border-color: color-mix(in srgb, var(--ink), transparent 12%);
     }
 
     .status {
@@ -120,12 +154,13 @@
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      padding: 12px 14px;
+      padding: 11px 12px;
       border: 1px solid var(--line);
       border-radius: 8px;
-      background: var(--panel);
+      background: color-mix(in srgb, var(--panel), transparent 4%);
       color: var(--muted);
       box-shadow: var(--shadow);
+      font-size: 14px;
     }
 
     .stats {
@@ -140,28 +175,27 @@
       border-radius: 8px;
       background: var(--panel);
       padding: 16px;
-      min-height: 112px;
+      min-height: 108px;
       box-shadow: var(--shadow);
     }
 
     .stat strong {
       display: block;
-      font-size: 36px;
+      font-size: 34px;
       line-height: 1;
       margin-bottom: 10px;
+      letter-spacing: -.01em;
     }
 
     .stat span {
       color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: .08em;
-      font-size: 12px;
-      font-weight: 800;
+      font-size: 13px;
+      font-weight: 650;
     }
 
     .workspace {
       display: grid;
-      grid-template-columns: 360px minmax(0, 1fr);
+      grid-template-columns: 380px minmax(0, 1fr);
       gap: 14px;
       margin-top: 14px;
       min-height: 660px;
@@ -186,6 +220,7 @@
       gap: 10px;
       padding: 14px;
       border-bottom: 1px solid var(--line);
+      background: color-mix(in srgb, var(--panel), var(--panel-2) 35%);
     }
 
     input, select {
@@ -193,9 +228,10 @@
       min-height: 42px;
       border: 1px solid var(--line);
       border-radius: 8px;
-      background: var(--panel-2);
+      background: var(--panel);
       color: var(--ink);
       padding: 10px 11px;
+      font-size: 14px;
     }
 
     .list {
@@ -211,12 +247,18 @@
       border: 1px solid transparent;
       background: transparent;
       padding: 12px;
-      min-height: 82px;
+      min-height: 78px;
     }
 
     .item:hover, .item.active {
       background: var(--panel-2);
       border-color: var(--line);
+      box-shadow: none;
+    }
+
+    .item.active {
+      border-color: color-mix(in srgb, var(--teal), var(--line) 52%);
+      background: color-mix(in srgb, var(--teal), var(--panel-2) 88%);
     }
 
     .item-title {
@@ -237,10 +279,12 @@
     .pill {
       border: 1px solid var(--line);
       border-radius: 999px;
-      padding: 3px 8px;
-      background: color-mix(in srgb, var(--panel), var(--panel-2) 60%);
+      padding: 2px 8px;
+      background: var(--panel);
+      color: var(--muted);
       max-width: 100%;
       overflow-wrap: anywhere;
+      font-weight: 650;
     }
 
     .detail {
@@ -253,24 +297,24 @@
       padding: 22px;
       border-bottom: 1px solid var(--line);
       background:
-        linear-gradient(90deg, color-mix(in srgb, var(--teal), transparent 82%), transparent 52%),
+        linear-gradient(135deg, color-mix(in srgb, var(--blue), transparent 90%), transparent 44%),
+        linear-gradient(45deg, color-mix(in srgb, var(--teal), transparent 90%), transparent 36%),
         var(--panel);
     }
 
     .breadcrumb {
       margin: 0 0 10px;
       color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: .08em;
       font-size: 12px;
-      font-weight: 800;
+      font-weight: 700;
     }
 
     .detail-title {
       margin: 0;
-      font-size: clamp(28px, 4vw, 52px);
-      line-height: 1.04;
+      font-size: clamp(28px, 4vw, 48px);
+      line-height: 1.06;
       overflow-wrap: anywhere;
+      letter-spacing: -.01em;
     }
 
     .detail-link {
@@ -279,6 +323,7 @@
       color: var(--blue);
       text-decoration: none;
       font-weight: 700;
+      font-size: 14px;
     }
 
     .detail-body {
@@ -289,13 +334,13 @@
     .property-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
+      gap: 12px;
     }
 
     .prop {
       border: 1px solid var(--line);
       border-radius: 8px;
-      background: color-mix(in srgb, var(--panel), var(--panel-2) 38%);
+      background: var(--panel);
       padding: 13px;
       min-height: 78px;
     }
@@ -304,9 +349,7 @@
       margin: 0 0 8px;
       color: var(--muted);
       font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: .08em;
-      font-weight: 800;
+      font-weight: 750;
     }
 
     .prop-value {
@@ -346,10 +389,11 @@
       display: grid;
       align-items: end;
       overflow: hidden;
+      box-shadow: var(--shadow);
     }
 
     .bar-fill {
-      background: linear-gradient(180deg, var(--teal), var(--blue));
+      background: linear-gradient(180deg, var(--blue), var(--teal));
       min-height: 4px;
     }
 
@@ -381,6 +425,7 @@
   <main class="app">
     <header>
       <div>
+        <p class="eyebrow">Notion Backup · GitHub Pages · Details View</p>
         <h1>Notion Content Dashboard</h1>
         <p class="lede">A clean home for browsing your backed-up Notion database: overview first, details one click away.</p>
       </div>
@@ -398,10 +443,10 @@
     </section>
 
     <section class="stats">
-      <div class="stat"><strong id="pageCount">0</strong><span>Pages</span></div>
-      <div class="stat"><strong id="propertyCount">0</strong><span>Properties</span></div>
-      <div class="stat"><strong id="statusCount">0</strong><span>Status Values</span></div>
-      <div class="stat"><strong id="recentCount">0</strong><span>Recent Updates</span></div>
+      <div class="stat"><strong id="pageCount">0</strong><span>Total pages</span></div>
+      <div class="stat"><strong id="propertyCount">0</strong><span>Database properties</span></div>
+      <div class="stat"><strong id="statusCount">0</strong><span>Status values</span></div>
+      <div class="stat"><strong id="recentCount">0</strong><span>Updated this week</span></div>
     </section>
 
     <section class="timeline" id="timeline" aria-label="Recent update chart"></section>
