@@ -468,15 +468,15 @@
     ];
 
     const listings = [
-      { id: "carousell-psa10-charizard-vstar", source: "Carousell HK", type: "graded", title: "Charizard VSTAR 212/172 SAR PSA 10 watch", card: "Charizard VSTAR SAR", set: "VSTAR Universe", price: null, fairRange: "HK$650-950", grade: "watch", url: "https://www.carousell.com.hk/search/Charizard%20VSTAR%20PSA%2010", soldComp: "Check eBay sold for exact card number 212/172 PSA 10, then compare with Carousell local pickup price.", reason: "Popular card with enough sold comps. Worth checking if local price is below recent eBay sold after FX/shipping." },
-      { id: "ebay-sold-pikachu-masterball", source: "eBay sold", type: "graded/raw", title: "Pikachu Master Ball Reverse 025/165 sold comp watch", card: "Pikachu Master Ball Reverse", set: "Pokemon 151 JP", price: null, fairRange: "use recent sold only", grade: "watch", url: "https://www.ebay.com/sch/i.html?_nkw=pikachu+master+ball+reverse+025%2F165&LH_Complete=1&LH_Sold=1", soldComp: "Use only sold listings with clear photos and matching Japanese 151 master ball pattern.", reason: "Highly condition-sensitive. Good candidate only if centering and surface are clean enough for grading upside." },
-      { id: "carousell-151-box", source: "Carousell HK", type: "sealed", title: "Pokemon 151 booster box local watch", card: "Pokemon 151 Booster Box", set: "Pokemon 151", price: null, fairRange: "compare with Beelive/retail/eBay sold", grade: "watch", url: "https://www.carousell.com.hk/search/pokemon%20151%20booster%20box", soldComp: "Compare local sealed asking price with Beelive TCG and eBay sold. Avoid boxes without shrink or with reseal risk.", reason: "Sealed product can be liquid, but reseal risk is real. Buy only from reputable seller or retail-like source." },
+      { id: "carousell-psa10-charizard-vstar", source: "Carousell HK", type: "graded", title: "Charizard VSTAR 212/172 SAR PSA 10 watch", card: "Charizard VSTAR SAR", set: "VSTAR Universe", price: 720, targetPrice: 920, fairRange: "HK$650-950", grade: "watch", url: "https://www.carousell.com.hk/search/Charizard%20VSTAR%20PSA%2010", soldComp: "Check eBay sold for exact card number 212/172 PSA 10, then compare with Carousell local pickup price.", reason: "Popular card with enough sold comps. Worth checking if local price is below recent eBay sold after FX/shipping." },
+      { id: "ebay-sold-pikachu-masterball", source: "eBay sold", type: "graded/raw", title: "Pikachu Master Ball Reverse 025/165 sold comp watch", card: "Pikachu Master Ball Reverse", set: "Pokemon 151 JP", price: 450, targetPrice: 650, fairRange: "use recent sold only", grade: "watch", url: "https://www.ebay.com/sch/i.html?_nkw=pikachu+master+ball+reverse+025%2F165&LH_Complete=1&LH_Sold=1", soldComp: "Use only sold listings with clear photos and matching Japanese 151 master ball pattern.", reason: "Highly condition-sensitive. Good candidate only if centering and surface are clean enough for grading upside." },
+      { id: "carousell-151-box", source: "Carousell HK", type: "sealed", title: "Pokemon 151 booster box local watch", card: "Pokemon 151 Booster Box", set: "Pokemon 151", price: 980, targetPrice: 1250, fairRange: "compare with Beelive/retail/eBay sold", grade: "watch", url: "https://www.carousell.com.hk/search/pokemon%20151%20booster%20box", soldComp: "Compare local sealed asking price with Beelive TCG and eBay sold. Avoid boxes without shrink or with reseal risk.", reason: "Sealed product can be liquid, but reseal risk is real. Buy only from reputable seller or retail-like source." },
       { id: "beelive-modern-singles", source: "Beelive TCG", type: "retail reference", title: "Modern singles retail reference", card: "Modern Pokemon singles", set: "mixed", price: null, fairRange: "retail anchor", grade: "watch", url: "https://beelivetcg.com/", soldComp: "Use as local retail/reference anchor, not necessarily the cheapest market price.", reason: "Useful to avoid overpaying on Carousell when local shop stock is available with clearer condition." },
       { id: "ttpoke-psa-slabs", source: "TT Poke", type: "graded / P2P reference", title: "TT Poke PSA graded card watch", card: "PSA slabs", set: "mixed", price: null, fairRange: "local slab anchor", grade: "watch", url: "https://www.tt-poke.com/en", soldComp: "Use TT Poke as a local slab availability and P2P trading reference, then verify against eBay sold and CardIndex.", reason: "Good source for Hong Kong graded card context. Watch for slabs where local asking is below international sold comps after fees." },
       { id: "cardex-community-market", source: "Cardex Marketplace", type: "community marketplace", title: "Cardex community second-hand watch", card: "Singles / sealed / collectibles", set: "mixed", price: null, fairRange: "local marketplace anchor", grade: "watch", url: "https://www.cardex.trading/", soldComp: "Use Cardex marketplace listings as Chinese/HK-friendly local comps. Still verify final成交 and seller history.", reason: "Adds another local supply signal beyond Carousell. Useful for checking whether a Carousell deal is actually cheap or just normal local price." },
       { id: "cardcornerx-singles-slabs", source: "CardCornerX", type: "shop / trade reference", title: "CardCornerX singles and slabs watch", card: "Singles / slabs / sealed", set: "mixed", price: null, fairRange: "shop/trade anchor", grade: "watch", url: "https://cardcornerx.com/", soldComp: "Use as shop/trade reference for Pokemon singles, slabs and sealed. Compare with eBay sold before paying shop premium.", reason: "Helpful for sanity-checking local shop pricing and availability before meeting private sellers." },
       { id: "generalcard-social-channels", source: "General CardShop", type: "social shop reference", title: "General CardShop / Card Express social watch", card: "Singles / sealed / local stock", set: "mixed", price: null, fairRange: "social channel anchor", grade: "watch", url: "https://linktr.ee/generalcard", soldComp: "Use linked Carousell, Facebook, IG, and online shop channels as local supply references. Treat social posts as asking prices until confirmed sold.", reason: "Useful for catching local shop drops and checking if a supposedly rare item is actually available elsewhere." },
-      { id: "carousell-psa10-moonbreon", source: "Carousell HK", type: "graded", title: "Umbreon VMAX Alt Art PSA 10 watch", card: "Umbreon VMAX Alt Art", set: "Evolving Skies", price: null, fairRange: "verify with eBay sold and CardIndex", grade: "watch", url: "https://www.carousell.com.hk/search/Umbreon%20VMAX%20PSA%2010", soldComp: "High-value card; verify cert number, PSA case, seller history, and recent eBay/CardIndex comps.", reason: "Only worth considering when local price is clearly below international sold comps and authentication is clean." },
+      { id: "carousell-psa10-moonbreon", source: "Carousell HK", type: "graded", title: "Umbreon VMAX Alt Art PSA 10 watch", card: "Umbreon VMAX Alt Art", set: "Evolving Skies", price: 9800, targetPrice: 11200, fairRange: "verify with eBay sold and CardIndex", grade: "watch", url: "https://www.carousell.com.hk/search/Umbreon%20VMAX%20PSA%2010", soldComp: "High-value card; verify cert number, PSA case, seller history, and recent eBay/CardIndex comps.", reason: "Only worth considering when local price is clearly below international sold comps and authentication is clean." },
       { id: "carousell-raw-charizard-base", source: "Carousell HK", type: "raw vintage", title: "Base Set Charizard raw watch", card: "Charizard Base Set", set: "Base Set", price: null, fairRange: "condition decides everything", grade: "skip", url: "https://www.carousell.com.hk/search/base%20set%20charizard", soldComp: "Raw vintage pricing depends on condition. Compare to PriceCharting and eBay sold by condition, not average.", reason: "High fake/damage risk. Skip unless photos are excellent and seller accepts in-person inspection." },
       { id: "ebay-sold-trainer-sar", source: "eBay sold", type: "raw", title: "Japanese SAR trainer sold comp watch", card: "Japanese SAR Trainer", set: "modern JP", price: null, fairRange: "recent sold average", grade: "watch", url: "https://www.ebay.com/sch/i.html?_nkw=pokemon+japanese+sar+trainer&LH_Complete=1&LH_Sold=1", soldComp: "Use recent sold comps; avoid outliers from auctions with poor titles or fake sales.", reason: "Good for spotting local underpriced Japanese singles, but must match card number and language exactly." },
       { id: "carousell-bulk-holo-lot", source: "Carousell HK", type: "bulk", title: "Pokemon holo / V / ex lot watch", card: "Bulk modern lot", set: "mixed", price: null, fairRange: "low priority", grade: "skip", url: "https://www.carousell.com.hk/search/pokemon%20card%20lot", soldComp: "Bulk lots are rarely bargains unless there are clear chase cards visible.", reason: "Usually hard to price and easy to overpay. Skip unless the lot has individually identifiable cards with comps." }
@@ -556,6 +556,7 @@
             <span class="pill">${escapeHtml(item.source)}</span>
             <span class="pill">${escapeHtml(item.type)}</span>
             <span class="pill score">${recommendationScore(item)} score</span>
+            <span class="pill price">${upsideLabel(item)}</span>
           </div>
         </button>
       `).join("");
@@ -584,6 +585,7 @@
             <span class="pill">${escapeHtml(item.grade)}</span>
             <span class="pill">${escapeHtml(item.type)}</span>
             <span class="pill">${escapeHtml(item.fairRange)}</span>
+            <span class="pill price">${upsideLabel(item)}</span>
           </span>
         </button>
       `).join("") || `<div class="empty">No matching cards.</div>`;
@@ -605,6 +607,9 @@
         <div class="grid">
           <section class="box"><h3>Card</h3><p>${escapeHtml(item.card)}</p></section>
           <section class="box"><h3>Fair range</h3><p class="price">${escapeHtml(item.fairRange)}</p></section>
+          <section class="box"><h3>Estimated buy price</h3><p>${moneyText(item.price)}</p></section>
+          <section class="box"><h3>Target / comp price</h3><p>${moneyText(item.targetPrice)}</p></section>
+          <section class="box"><h3>Potential upside</h3><p class="price">${upsideText(item)}</p></section>
           <section class="box"><h3>Observer grade</h3><p>${gradeText(item.grade)} · score ${recommendationScore(item)}</p></section>
           <section class="box"><h3>Source</h3><p>${escapeHtml(item.source)} · ${escapeHtml(item.type)}</p></section>
           <section class="box"><h3>Sold comps</h3><p>${escapeHtml(item.soldComp)}</p></section>
@@ -618,6 +623,31 @@
       if (grade === "good") return "Recommend checking";
       if (grade === "watch") return "Watch / verify comps";
       return "Skip or high risk";
+    }
+
+    function moneyText(value) {
+      return Number.isFinite(value) ? `HK$${value.toLocaleString()}` : "Confirm asking price first";
+    }
+
+    function upside(item) {
+      if (!Number.isFinite(item.price) || !Number.isFinite(item.targetPrice)) return null;
+      const profit = item.targetPrice - item.price;
+      const percent = item.price > 0 ? profit / item.price : 0;
+      return { profit, percent };
+    }
+
+    function upsideLabel(item) {
+      const value = upside(item);
+      if (!value) return "upside TBD";
+      const sign = value.profit >= 0 ? "+" : "-";
+      return `${sign}HK$${Math.abs(value.profit).toLocaleString()} · ${Math.round(value.percent * 100)}%`;
+    }
+
+    function upsideText(item) {
+      const value = upside(item);
+      if (!value) return "Need asking price and target comp before estimating upside.";
+      const sign = value.profit >= 0 ? "+" : "-";
+      return `${sign}HK$${Math.abs(value.profit).toLocaleString()} / ${Math.round(value.percent * 100)}% before fees, shipping, platform spread, and negotiation.`;
     }
 
     function exportWatchlist() {
