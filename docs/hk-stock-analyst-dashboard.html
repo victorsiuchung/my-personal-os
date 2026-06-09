@@ -1,0 +1,647 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HK Stock Analyst Dashboard</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #fafafa;
+      --panel: #ffffff;
+      --panel-2: #f4f4f5;
+      --line: #e4e4e7;
+      --ink: #09090b;
+      --muted: #71717a;
+      --green: #16a34a;
+      --amber: #d97706;
+      --rose: #e11d48;
+      --blue: #2563eb;
+      --shadow: 0 1px 2px rgba(24,24,27,.06), 0 12px 30px rgba(24,24,27,.07);
+    }
+
+    [data-theme="dark"] {
+      color-scheme: dark;
+      --bg: #09090b;
+      --panel: #0f0f12;
+      --panel-2: #18181b;
+      --line: #27272a;
+      --ink: #fafafa;
+      --muted: #a1a1aa;
+      --green: #86efac;
+      --amber: #fbbf24;
+      --rose: #fb7185;
+      --blue: #93c5fd;
+      --shadow: 0 1px 2px rgba(0,0,0,.36), 0 14px 36px rgba(0,0,0,.25);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 12% 0%, color-mix(in srgb, var(--blue), transparent 88%), transparent 30rem),
+        radial-gradient(circle at 88% 0%, color-mix(in srgb, var(--green), transparent 90%), transparent 28rem),
+        var(--bg);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0;
+    }
+
+    button, input, select { font: inherit; }
+    button, input, select {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      color: var(--ink);
+    }
+
+    button {
+      min-height: 40px;
+      padding: 9px 13px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 650;
+    }
+
+    button:hover, input:focus, select:focus {
+      outline: 0;
+      border-color: color-mix(in srgb, var(--ink), transparent 40%);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--ink), transparent 88%);
+    }
+
+    .primary {
+      background: var(--ink);
+      border-color: var(--ink);
+      color: var(--bg);
+    }
+
+    .app {
+      width: min(1480px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 22px 0 44px;
+    }
+
+    header {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 18px;
+      align-items: center;
+      padding: 12px 0 20px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      margin: 0 0 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--panel);
+      color: var(--muted);
+      padding: 5px 10px;
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(30px, 4vw, 56px);
+      line-height: 1;
+      font-weight: 820;
+      letter-spacing: -.01em;
+    }
+
+    .lede {
+      margin: 10px 0 0;
+      color: var(--muted);
+      line-height: 1.5;
+      max-width: 820px;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .hidden { display: none; }
+
+    .status, .panel, .stat {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .status {
+      margin-top: 14px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 11px 12px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .stat {
+      padding: 16px;
+      min-height: 108px;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 34px;
+      line-height: 1;
+      margin-bottom: 10px;
+    }
+
+    .stat span {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: 360px minmax(0, 1fr) 330px;
+      gap: 14px;
+      margin-top: 14px;
+      min-height: 720px;
+    }
+
+    .panel {
+      overflow: hidden;
+      min-width: 0;
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px;
+      border-bottom: 1px solid var(--line);
+      background: color-mix(in srgb, var(--panel), var(--panel-2) 35%);
+    }
+
+    .panel-title {
+      margin: 0;
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 750;
+    }
+
+    .filters {
+      display: grid;
+      gap: 10px;
+      padding: 14px;
+      border-bottom: 1px solid var(--line);
+      background: color-mix(in srgb, var(--panel), var(--panel-2) 35%);
+    }
+
+    input, select {
+      width: 100%;
+      min-height: 42px;
+      padding: 10px 11px;
+      font-size: 14px;
+    }
+
+    .stack, .list {
+      display: grid;
+      gap: 8px;
+      padding: 10px;
+      max-height: 700px;
+      overflow: auto;
+    }
+
+    .item, .tool {
+      width: 100%;
+      text-align: left;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      padding: 12px;
+    }
+
+    .item {
+      display: grid;
+      gap: 7px;
+      min-height: 88px;
+      cursor: pointer;
+    }
+
+    .item:hover, .item.active { background: var(--panel-2); }
+    .item.active { border-color: color-mix(in srgb, var(--blue), var(--line) 40%); }
+
+    .title {
+      font-weight: 760;
+      line-height: 1.25;
+      overflow-wrap: anywhere;
+    }
+
+    .meta {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .pill {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--panel);
+      color: var(--muted);
+      padding: 2px 8px;
+      font-weight: 650;
+    }
+
+    .score { color: var(--blue); font-weight: 820; }
+    .buy { color: var(--green); font-weight: 820; }
+    .warn { color: var(--amber); font-weight: 820; }
+    .risk { color: var(--rose); font-weight: 820; }
+
+    .detail {
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+
+    .detail-head {
+      padding: 22px;
+      border-bottom: 1px solid var(--line);
+      background:
+        linear-gradient(135deg, color-mix(in srgb, var(--blue), transparent 90%), transparent 44%),
+        linear-gradient(45deg, color-mix(in srgb, var(--green), transparent 90%), transparent 36%),
+        var(--panel);
+    }
+
+    .detail-head h2 {
+      margin: 0;
+      font-size: clamp(26px, 4vw, 48px);
+      line-height: 1.06;
+      letter-spacing: -.01em;
+      overflow-wrap: anywhere;
+    }
+
+    .detail-sub {
+      margin: 0 0 10px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .detail-body {
+      padding: 16px;
+      overflow: auto;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .box {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      padding: 13px;
+      min-height: 82px;
+    }
+
+    .box h3, .tool h3 {
+      margin: 0 0 8px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 760;
+    }
+
+    .box p, .tool p {
+      margin: 0;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    .link {
+      display: inline-block;
+      color: var(--blue);
+      text-decoration: none;
+      font-weight: 760;
+    }
+
+    .empty {
+      display: grid;
+      place-items: center;
+      min-height: 360px;
+      color: var(--muted);
+      text-align: center;
+      padding: 24px;
+    }
+
+    @media (max-width: 1120px) {
+      header, .status, .stats, .workspace, .grid {
+        grid-template-columns: 1fr;
+      }
+      .actions { justify-content: flex-start; }
+    }
+  </style>
+</head>
+<body data-theme="dark">
+  <main class="app">
+    <header>
+      <div>
+        <p class="eyebrow">Stock Analyst · Futu Report · Technical Signals</p>
+        <h1>HK Stock Analyst Dashboard</h1>
+        <p class="lede">用嚟睇你港股全市場掃描系統嘅推介同技術分析。匯入 `reports/*.md` 後，我會用股票分析員角度幫你整理邊啲值得優先睇。</p>
+      </div>
+      <div class="actions">
+        <button id="themeToggle" type="button">Dark</button>
+        <button id="importBtn" type="button">Import report</button>
+        <button id="resetBtn" type="button">Demo data</button>
+        <button id="exportBtn" type="button" class="primary">Export JSON</button>
+        <input id="fileInput" type="file" class="hidden" accept=".md,.markdown,text/markdown,text/plain">
+      </div>
+    </header>
+
+    <section class="status">
+      <span id="sourceLabel">Demo analyst board. Import a Markdown report from hk-stock-analysis/reports for live recommendations.</span>
+      <span id="timeLabel">No report loaded</span>
+    </section>
+
+    <section class="stats">
+      <div class="stat"><strong id="totalCount">0</strong><span>Analyzed stocks</span></div>
+      <div class="stat"><strong id="strongCount">0</strong><span>Strong buy</span></div>
+      <div class="stat"><strong id="buyCount">0</strong><span>Buy / watch</span></div>
+      <div class="stat"><strong id="avgScore">0</strong><span>Average score</span></div>
+    </section>
+
+    <section class="workspace">
+      <aside class="panel">
+        <div class="filters">
+          <input id="searchInput" type="search" placeholder="Search code, name, trend, signal">
+          <select id="signalFilter">
+            <option value="">All signals</option>
+            <option value="強烈買入">強烈買入</option>
+            <option value="買入">買入</option>
+            <option value="中性">中性 / 關注</option>
+            <option value="賣出">賣出</option>
+          </select>
+        </div>
+        <div id="stockList" class="list" aria-live="polite"></div>
+      </aside>
+
+      <article class="panel detail">
+        <div class="detail-head">
+          <p id="detailMeta" class="detail-sub">Stock analyst view</p>
+          <h2 id="detailTitle">選一隻股票睇分析</h2>
+        </div>
+        <div id="detailBody" class="detail-body">
+          <div class="empty">左邊揀股票，呢度會顯示趨勢、RSI、MACD、成交量、布林帶同我嘅分析員觀點。</div>
+        </div>
+      </article>
+
+      <aside class="panel">
+        <div class="panel-head">
+          <h2 class="panel-title">熱門分析工具</h2>
+          <span class="pill">GitHub refs</span>
+        </div>
+        <div id="toolList" class="stack"></div>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    const themeKey = "hkStockAnalyst.theme";
+    const demoStocks = [
+      { rank: 1, code: "HK.00700", name: "騰訊控股", current_price: 402.8, score: 88, trend: "上升", rsi_status: "中性", macd_signal: "金叉", volume_surge: true, boll_position: "中軌", signal: "強烈買入", note: "多個趨勢訊號共振，若成交量保持放大，可以列入優先觀察。等待回踩 MA20 或突破確認。" },
+      { rank: 2, code: "HK.09988", name: "阿里巴巴-W", current_price: 82.4, score: 81, trend: "上升", rsi_status: "中性", macd_signal: "無", volume_surge: true, boll_position: "中軌", signal: "買入", note: "趨勢改善但 MACD 未完全確認，適合放入 watchlist，等金叉或量價配合。" },
+      { rank: 3, code: "HK.03690", name: "美團-W", current_price: 126.2, score: 74, trend: "盤整", rsi_status: "中性", macd_signal: "金叉", volume_surge: false, boll_position: "中軌", signal: "買入", note: "盤整中出現 MACD 改善，若突破區間上沿，技術形態會更完整。" },
+      { rank: 4, code: "HK.01299", name: "友邦保險", current_price: 61.3, score: 63, trend: "盤整", rsi_status: "超賣", macd_signal: "無", volume_surge: false, boll_position: "下軌", signal: "中性", note: "偏反彈機會，不是強趨勢。只適合作為低吸觀察，止蝕要清楚。" },
+      { rank: 5, code: "HK.00005", name: "匯豐控股", current_price: 68.9, score: 58, trend: "盤整", rsi_status: "中性", macd_signal: "死叉", volume_surge: false, boll_position: "中軌", signal: "中性", note: "分數一般，短線信號未夠強。偏防守型觀察，不是進攻型推介。" }
+    ];
+
+    const tools = [
+      { name: "TA-Lib", url: "https://ta-lib.org/index.html", tag: "core indicators", note: "經典技術分析庫，有 200+ 指標，適合你之後擴展 ADX、Stochastic、candlestick patterns。" },
+      { name: "pandas-ta / ta", url: "https://github.com/aarigs/pandas-ta", tag: "pandas indicators", note: "Pandas 風格技術指標庫，適合快速加新指標。另可參考 bukosabino/ta，社群使用量高。" },
+      { name: "TradingView Screener", url: "https://github.com/shner-elmo/TradingView-Screener", tag: "screener API", note: "用 Python 建 TradingView screeners。可作跨市場信號參考，但要留意資料源限制。" },
+      { name: "xang1234/stock-screener", url: "https://github.com/xang1234/stock-screener", tag: "full platform", note: "有 HK 市場、多方法掃描、市場 breadth、theme discovery。可參考 UI/系統架構。" },
+      { name: "Hexital", url: "https://github.com/MerlinR/Hexital", tag: "incremental TA", note: "增量式技術分析庫，適合將來做即時掃描或 streaming 更新。" }
+    ];
+
+    let stocks = [...demoStocks];
+    let selectedCode = stocks[0].code;
+
+    const els = {
+      themeToggle: document.querySelector("#themeToggle"),
+      importBtn: document.querySelector("#importBtn"),
+      resetBtn: document.querySelector("#resetBtn"),
+      exportBtn: document.querySelector("#exportBtn"),
+      fileInput: document.querySelector("#fileInput"),
+      searchInput: document.querySelector("#searchInput"),
+      signalFilter: document.querySelector("#signalFilter"),
+      sourceLabel: document.querySelector("#sourceLabel"),
+      timeLabel: document.querySelector("#timeLabel"),
+      totalCount: document.querySelector("#totalCount"),
+      strongCount: document.querySelector("#strongCount"),
+      buyCount: document.querySelector("#buyCount"),
+      avgScore: document.querySelector("#avgScore"),
+      stockList: document.querySelector("#stockList"),
+      detailMeta: document.querySelector("#detailMeta"),
+      detailTitle: document.querySelector("#detailTitle"),
+      detailBody: document.querySelector("#detailBody"),
+      toolList: document.querySelector("#toolList")
+    };
+
+    document.body.dataset.theme = localStorage.getItem(themeKey) || "dark";
+    els.themeToggle.textContent = document.body.dataset.theme === "dark" ? "Dark" : "Light";
+    els.themeToggle.addEventListener("click", () => {
+      const next = document.body.dataset.theme === "dark" ? "light" : "dark";
+      document.body.dataset.theme = next;
+      els.themeToggle.textContent = next === "dark" ? "Dark" : "Light";
+      localStorage.setItem(themeKey, next);
+    });
+    els.importBtn.addEventListener("click", () => els.fileInput.click());
+    els.fileInput.addEventListener("change", importReport);
+    els.resetBtn.addEventListener("click", () => {
+      stocks = [...demoStocks];
+      selectedCode = stocks[0].code;
+      els.sourceLabel.textContent = "Demo analyst board. Import a Markdown report from hk-stock-analysis/reports for live recommendations.";
+      els.timeLabel.textContent = "No report loaded";
+      render();
+    });
+    els.exportBtn.addEventListener("click", exportJson);
+    els.searchInput.addEventListener("input", render);
+    els.signalFilter.addEventListener("change", render);
+
+    renderTools();
+    render();
+
+    function importReport(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        const parsed = parseMarkdownReport(String(reader.result));
+        if (!parsed.length) {
+          alert("未能在報告入面找到 Top 推介表。請確認報告包含 Markdown table。");
+          return;
+        }
+        stocks = parsed;
+        selectedCode = stocks[0].code;
+        els.sourceLabel.textContent = `Loaded report: ${file.name}`;
+        els.timeLabel.textContent = new Date().toLocaleString([], { dateStyle: "medium", timeStyle: "short" });
+        render();
+      };
+      reader.readAsText(file);
+      event.target.value = "";
+    }
+
+    function parseMarkdownReport(markdown) {
+      const lines = markdown.split(/\r?\n/);
+      const rows = [];
+      for (const line of lines) {
+        if (!/^\|\s*\d+\s*\|/.test(line)) continue;
+        const cells = line.split("|").slice(1, -1).map(cell => cell.trim());
+        if (cells.length < 8) continue;
+        rows.push({
+          rank: Number(cells[0]) || rows.length + 1,
+          code: cells[1],
+          name: cells[2],
+          current_price: Number(cells[3]) || 0,
+          score: Number(cells[4]) || 0,
+          trend: cells[5],
+          rsi_status: cells[6],
+          macd_signal: "未載入",
+          volume_surge: false,
+          boll_position: "未載入",
+          signal: cells[7],
+          note: analystNote(Number(cells[4]) || 0, cells[5], cells[6], cells[7])
+        });
+      }
+      return rows;
+    }
+
+    function analystNote(score, trend, rsi, signal) {
+      if (score >= 85) return `技術評分 ${score}，屬於高優先度。趨勢為${trend}，RSI ${rsi}。入場前仍要等成交量和大市配合。`;
+      if (score >= 70) return `技術評分 ${score}，屬於可買入/觀察區。訊號是${signal}，適合等回調或突破確認。`;
+      if (score >= 55) return `技術評分 ${score}，暫屬關注名單。未必值得立即買，等訊號改善。`;
+      return `技術評分 ${score}，暫不優先。除非基本面或消息面有強催化，否則先迴避。`;
+    }
+
+    function filteredStocks() {
+      const q = els.searchInput.value.trim().toLowerCase();
+      const signal = els.signalFilter.value;
+      return stocks.filter(stock => {
+        const haystack = `${stock.code} ${stock.name} ${stock.trend} ${stock.signal} ${stock.rsi_status}`.toLowerCase();
+        const signalMatch = !signal || stock.signal.includes(signal) || (signal === "中性" && stock.signal === "中性");
+        return (!q || haystack.includes(q)) && signalMatch;
+      });
+    }
+
+    function render() {
+      renderStats();
+      renderList();
+      selectStock(selectedCode, false);
+    }
+
+    function renderStats() {
+      const avg = stocks.length ? Math.round(stocks.reduce((sum, item) => sum + item.score, 0) / stocks.length) : 0;
+      els.totalCount.textContent = stocks.length;
+      els.strongCount.textContent = stocks.filter(item => item.score > 85).length;
+      els.buyCount.textContent = stocks.filter(item => item.score >= 70).length;
+      els.avgScore.textContent = avg;
+    }
+
+    function renderList() {
+      const items = filteredStocks();
+      els.stockList.innerHTML = items.map(stock => `
+        <button class="item ${stock.code === selectedCode ? "active" : ""}" type="button" data-code="${escapeHtml(stock.code)}">
+          <span class="title">${escapeHtml(stock.code)} · ${escapeHtml(stock.name)}</span>
+          <span class="meta">
+            <span class="pill score">${stock.score}分</span>
+            <span class="pill ${stock.score >= 70 ? "buy" : stock.score < 40 ? "risk" : "warn"}">${escapeHtml(stock.signal)}</span>
+            <span class="pill">${escapeHtml(stock.trend)}</span>
+            <span class="pill">RSI ${escapeHtml(stock.rsi_status)}</span>
+          </span>
+        </button>
+      `).join("") || `<div class="empty">No matching stocks.</div>`;
+      els.stockList.querySelectorAll(".item").forEach(item => {
+        item.addEventListener("click", () => selectStock(item.dataset.code));
+      });
+    }
+
+    function selectStock(code, rerender = true) {
+      const stock = stocks.find(item => item.code === code) || stocks[0];
+      if (!stock) return;
+      selectedCode = stock.code;
+      if (rerender) renderList();
+      els.detailMeta.textContent = `${stock.code} · 現價 ${formatPrice(stock.current_price)} · ${stock.signal}`;
+      els.detailTitle.textContent = stock.name;
+      els.detailBody.innerHTML = `
+        <div class="grid">
+          <section class="box"><h3>技術評分</h3><p class="score">${stock.score}/100 · ${escapeHtml(stock.signal)}</p></section>
+          <section class="box"><h3>分析員建議</h3><p>${recommendationText(stock)}</p></section>
+          <section class="box"><h3>趨勢</h3><p>${escapeHtml(stock.trend)}</p></section>
+          <section class="box"><h3>RSI 狀態</h3><p>${escapeHtml(stock.rsi_status)}</p></section>
+          <section class="box"><h3>MACD</h3><p>${escapeHtml(stock.macd_signal || "未載入")}</p></section>
+          <section class="box"><h3>成交量異動</h3><p>${stock.volume_surge ? "有放量訊號" : "未見明顯放量"}</p></section>
+          <section class="box"><h3>布林帶位置</h3><p>${escapeHtml(stock.boll_position || "未載入")}</p></section>
+          <section class="box"><h3>現價</h3><p>${formatPrice(stock.current_price)}</p></section>
+        </div>
+        <section class="box" style="margin-top:12px;"><h3>股票分析員觀點</h3><p>${escapeHtml(stock.note)}</p></section>
+        <section class="box" style="margin-top:12px;"><h3>風險提示</h3><p>呢個 dashboard 只係展示技術掃描結果，不構成投資建議。落盤前要再睇大市、成交深度、公司公告、業績、行業消息同自己風險承受能力。</p></section>
+      `;
+    }
+
+    function recommendationText(stock) {
+      if (stock.score > 85) return "優先研究，但等回調/突破確認，避免追高。";
+      if (stock.score >= 70) return "可以加入買入觀察，等待訊號共振。";
+      if (stock.score >= 55) return "只適合關注，未到主動買入級別。";
+      return "暫時迴避，等形態修復。";
+    }
+
+    function renderTools() {
+      els.toolList.innerHTML = tools.map(tool => `
+        <article class="tool">
+          <h3>${escapeHtml(tool.name)} · ${escapeHtml(tool.tag)}</h3>
+          <p>${escapeHtml(tool.note)}</p>
+          <p style="margin-top:8px;"><a class="link" href="${tool.url}" target="_blank" rel="noreferrer">Open project</a></p>
+        </article>
+      `).join("");
+    }
+
+    function exportJson() {
+      const blob = new Blob([JSON.stringify({ exported_at: new Date().toISOString(), stocks }, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `hk-stock-analyst-dashboard-${new Date().toISOString().slice(0, 10)}.json`;
+      link.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function formatPrice(value) {
+      return Number.isFinite(value) && value > 0 ? `HK$${value.toLocaleString(undefined, { maximumFractionDigits: 2 })}` : "未載入";
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+  </script>
+</body>
+</html>
