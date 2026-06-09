@@ -1,0 +1,651 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My Taste Hub</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f5f1ea;
+      --surface: #fffaf2;
+      --surface-2: #ece4d7;
+      --text: #202124;
+      --muted: #6e6257;
+      --line: #d6cbbb;
+      --accent: #0f766e;
+      --accent-2: #b45309;
+      --danger: #b91c1c;
+      --shadow: 0 18px 50px rgba(40, 30, 20, .12);
+    }
+
+    [data-theme="dark"] {
+      color-scheme: dark;
+      --bg: #141414;
+      --surface: #1e1e1d;
+      --surface-2: #292826;
+      --text: #f2eee8;
+      --muted: #b8aea3;
+      --line: #3c3935;
+      --accent: #5eead4;
+      --accent-2: #f6ad55;
+      --danger: #fb7185;
+      --shadow: 0 18px 50px rgba(0, 0, 0, .35);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0;
+    }
+
+    button, textarea, input {
+      font: inherit;
+    }
+
+    button {
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 10px 12px;
+      cursor: pointer;
+    }
+
+    button:hover { border-color: var(--accent); }
+
+    .app {
+      width: min(1280px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 24px 0 40px;
+    }
+
+    header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: end;
+      padding: 12px 0 22px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(32px, 5vw, 64px);
+      line-height: .98;
+      font-weight: 760;
+    }
+
+    .tagline {
+      margin: 10px 0 0;
+      max-width: 700px;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #071312;
+      font-weight: 700;
+    }
+
+    [data-theme="light"] .primary {
+      color: #fff;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(320px, .95fr);
+      gap: 18px;
+      margin-top: 18px;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      min-width: 0;
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .panel-title {
+      margin: 0;
+      font-size: 15px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .editor-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 520px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 520px;
+      resize: vertical;
+      border: 0;
+      border-right: 1px solid var(--line);
+      background: transparent;
+      color: var(--text);
+      padding: 18px;
+      line-height: 1.55;
+      outline: 0;
+    }
+
+    .preview {
+      padding: 18px 22px;
+      overflow-wrap: anywhere;
+      line-height: 1.65;
+    }
+
+    .preview h1, .preview h2, .preview h3 {
+      line-height: 1.15;
+      margin: 16px 0 8px;
+    }
+
+    .preview h1 { font-size: 30px; }
+    .preview h2 { font-size: 24px; }
+    .preview h3 { font-size: 19px; }
+    .preview p { margin: 10px 0; }
+    .preview blockquote {
+      margin: 14px 0;
+      padding: 2px 0 2px 14px;
+      border-left: 4px solid var(--accent);
+      color: var(--muted);
+    }
+    .preview code {
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 2px 5px;
+    }
+    .preview pre {
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      overflow: auto;
+    }
+
+    .inspiration {
+      display: grid;
+      grid-template-rows: auto 1fr;
+      min-height: 520px;
+    }
+
+    .form {
+      display: grid;
+      gap: 10px;
+      padding: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    input, .small-note {
+      width: 100%;
+    }
+
+    input {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface-2);
+      color: var(--text);
+      padding: 11px 12px;
+      outline: 0;
+    }
+
+    input:focus, textarea:focus {
+      box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--accent), transparent 55%);
+    }
+
+    .small-note {
+      min-height: 112px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface-2);
+    }
+
+    .entries {
+      padding: 12px;
+      display: grid;
+      gap: 10px;
+      align-content: start;
+      max-height: 610px;
+      overflow: auto;
+    }
+
+    .entry {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: color-mix(in srgb, var(--surface), var(--surface-2) 45%);
+      padding: 12px;
+    }
+
+    .entry-top {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .entry h3 {
+      margin: 0 0 5px;
+      font-size: 17px;
+      line-height: 1.25;
+    }
+
+    .meta {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .entry p {
+      margin: 10px 0 0;
+      line-height: 1.55;
+      white-space: pre-wrap;
+    }
+
+    .delete {
+      width: 34px;
+      height: 34px;
+      display: inline-grid;
+      place-items: center;
+      padding: 0;
+      color: var(--danger);
+      flex: 0 0 auto;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .stat {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 28px;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .stat span {
+      color: var(--muted);
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      font-weight: 800;
+    }
+
+    @media (max-width: 920px) {
+      header, .grid, .editor-wrap, .form-row, .stats {
+        grid-template-columns: 1fr;
+      }
+
+      header {
+        align-items: start;
+      }
+
+      .toolbar {
+        justify-content: flex-start;
+      }
+
+      textarea {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+    }
+  </style>
+</head>
+<body data-theme="dark">
+  <main class="app">
+    <header>
+      <div>
+        <h1>My Taste Hub</h1>
+        <p class="tagline">A working archive for design references, aesthetic notes, patterns, and the tiny daily signals that sharpen taste over time.</p>
+      </div>
+      <div class="toolbar">
+        <button id="themeToggle" type="button" title="Toggle dark mode">Dark</button>
+        <button id="exportBtn" type="button" title="Export your records as JSON">Export</button>
+        <button id="resetBtn" type="button" title="Clear local saved data">Reset</button>
+      </div>
+    </header>
+
+    <section class="stats" aria-label="Taste hub stats">
+      <div class="stat"><strong id="entryCount">0</strong><span>Daily Notes</span></div>
+      <div class="stat"><strong id="tagCount">0</strong><span>Tags</span></div>
+      <div class="stat"><strong id="wordCount">0</strong><span>Markdown Words</span></div>
+    </section>
+
+    <section class="grid">
+      <article class="panel">
+        <div class="panel-head">
+          <h2 class="panel-title">Markdown Taste Notes</h2>
+          <button id="saveMarkdown" type="button" class="primary">Save Notes</button>
+        </div>
+        <div class="editor-wrap">
+          <textarea id="markdownInput" spellcheck="true" aria-label="Markdown notes"></textarea>
+          <div id="markdownPreview" class="preview" aria-label="Markdown preview"></div>
+        </div>
+      </article>
+
+      <aside class="panel inspiration">
+        <div class="panel-head">
+          <h2 class="panel-title">Daily Design Inspiration</h2>
+          <button id="addEntry" type="button" class="primary">Add</button>
+        </div>
+
+        <div class="form">
+          <div class="form-row">
+            <input id="entryTitle" type="text" placeholder="Inspiration title">
+            <input id="entryTags" type="text" placeholder="Tags: layout, typography">
+          </div>
+          <div class="form-row">
+            <input id="entrySource" type="text" placeholder="Source or link">
+            <input id="entryMood" type="text" placeholder="Mood: quiet, sharp, warm">
+          </div>
+          <textarea id="entryNote" class="small-note" placeholder="What caught your eye today?"></textarea>
+        </div>
+
+        <div id="entries" class="entries" aria-live="polite"></div>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    const storageKey = "myTasteHub.v1";
+    const defaultMarkdown = `# Taste Direction
+
+## Current Pull
+- Editorial layouts with generous rhythm
+- Interfaces that feel calm but precise
+- Materials: brushed metal, paper grain, translucent glass
+
+## References To Revisit
+> Save links, screenshots, palette notes, product details, and why they worked.
+
+## Taste Rules
+1. Prefer clarity over decoration.
+2. Let contrast carry hierarchy.
+3. Keep one surprising detail.`;
+
+    const state = loadState();
+    const markdownInput = document.querySelector("#markdownInput");
+    const markdownPreview = document.querySelector("#markdownPreview");
+    const entriesEl = document.querySelector("#entries");
+    const themeToggle = document.querySelector("#themeToggle");
+
+    markdownInput.value = state.markdown;
+    document.body.dataset.theme = state.theme;
+    themeToggle.textContent = state.theme === "dark" ? "Dark" : "Light";
+
+    renderMarkdown();
+    renderEntries();
+    updateStats();
+
+    document.querySelector("#saveMarkdown").addEventListener("click", () => {
+      state.markdown = markdownInput.value;
+      saveState();
+      updateStats();
+    });
+
+    markdownInput.addEventListener("input", () => {
+      state.markdown = markdownInput.value;
+      renderMarkdown();
+      updateStats();
+      saveState();
+    });
+
+    themeToggle.addEventListener("click", () => {
+      state.theme = state.theme === "dark" ? "light" : "dark";
+      document.body.dataset.theme = state.theme;
+      themeToggle.textContent = state.theme === "dark" ? "Dark" : "Light";
+      saveState();
+    });
+
+    document.querySelector("#addEntry").addEventListener("click", addEntry);
+    document.querySelector("#exportBtn").addEventListener("click", exportData);
+    document.querySelector("#resetBtn").addEventListener("click", resetData);
+
+    function loadState() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(storageKey));
+        if (saved) return saved;
+      } catch (error) {}
+      return {
+        theme: "dark",
+        markdown: defaultMarkdown,
+        entries: [
+          {
+            id: crypto.randomUUID(),
+            title: "First taste signal",
+            tags: "typography, restraint",
+            source: "Personal observation",
+            mood: "quiet focus",
+            note: "A good dashboard should feel like a studio wall: useful at a glance, generous when you stay.",
+            date: new Date().toISOString()
+          }
+        ]
+      };
+    }
+
+    function saveState() {
+      localStorage.setItem(storageKey, JSON.stringify(state));
+    }
+
+    function escapeHtml(value) {
+      return value
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function inlineMarkdown(value) {
+      return escapeHtml(value)
+        .replace(/`([^`]+)`/g, "<code>$1</code>")
+        .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+        .replace(/\*([^*]+)\*/g, "<em>$1</em>");
+    }
+
+    function markdownToHtml(markdown) {
+      const lines = markdown.split(/\r?\n/);
+      const html = [];
+      let inList = false;
+      let inCode = false;
+      let codeLines = [];
+
+      const closeList = () => {
+        if (inList) {
+          html.push("</ul>");
+          inList = false;
+        }
+      };
+
+      for (const line of lines) {
+        if (line.trim().startsWith("```")) {
+          closeList();
+          if (inCode) {
+            html.push(`<pre><code>${escapeHtml(codeLines.join("\n"))}</code></pre>`);
+            codeLines = [];
+          }
+          inCode = !inCode;
+          continue;
+        }
+
+        if (inCode) {
+          codeLines.push(line);
+          continue;
+        }
+
+        if (/^###\s+/.test(line)) {
+          closeList();
+          html.push(`<h3>${inlineMarkdown(line.replace(/^###\s+/, ""))}</h3>`);
+        } else if (/^##\s+/.test(line)) {
+          closeList();
+          html.push(`<h2>${inlineMarkdown(line.replace(/^##\s+/, ""))}</h2>`);
+        } else if (/^#\s+/.test(line)) {
+          closeList();
+          html.push(`<h1>${inlineMarkdown(line.replace(/^#\s+/, ""))}</h1>`);
+        } else if (/^>\s?/.test(line)) {
+          closeList();
+          html.push(`<blockquote>${inlineMarkdown(line.replace(/^>\s?/, ""))}</blockquote>`);
+        } else if (/^[-*]\s+/.test(line)) {
+          if (!inList) {
+            html.push("<ul>");
+            inList = true;
+          }
+          html.push(`<li>${inlineMarkdown(line.replace(/^[-*]\s+/, ""))}</li>`);
+        } else if (/^\d+\.\s+/.test(line)) {
+          if (!inList) {
+            html.push("<ul>");
+            inList = true;
+          }
+          html.push(`<li>${inlineMarkdown(line.replace(/^\d+\.\s+/, ""))}</li>`);
+        } else if (line.trim() === "") {
+          closeList();
+        } else {
+          closeList();
+          html.push(`<p>${inlineMarkdown(line)}</p>`);
+        }
+      }
+
+      closeList();
+      return html.join("");
+    }
+
+    function renderMarkdown() {
+      markdownPreview.innerHTML = markdownToHtml(markdownInput.value);
+    }
+
+    function addEntry() {
+      const title = document.querySelector("#entryTitle").value.trim();
+      const tags = document.querySelector("#entryTags").value.trim();
+      const source = document.querySelector("#entrySource").value.trim();
+      const mood = document.querySelector("#entryMood").value.trim();
+      const note = document.querySelector("#entryNote").value.trim();
+
+      if (!title && !note) return;
+
+      state.entries.unshift({
+        id: crypto.randomUUID(),
+        title: title || "Untitled inspiration",
+        tags,
+        source,
+        mood,
+        note,
+        date: new Date().toISOString()
+      });
+
+      document.querySelector("#entryTitle").value = "";
+      document.querySelector("#entryTags").value = "";
+      document.querySelector("#entrySource").value = "";
+      document.querySelector("#entryMood").value = "";
+      document.querySelector("#entryNote").value = "";
+
+      saveState();
+      renderEntries();
+      updateStats();
+    }
+
+    function renderEntries() {
+      if (!state.entries.length) {
+        entriesEl.innerHTML = `<div class="entry"><p>No inspiration logged yet.</p></div>`;
+        return;
+      }
+
+      entriesEl.innerHTML = state.entries.map(entry => {
+        const date = new Date(entry.date).toLocaleString([], { dateStyle: "medium", timeStyle: "short" });
+        const meta = [date, entry.mood, entry.tags, entry.source].filter(Boolean).join(" · ");
+        return `
+          <article class="entry">
+            <div class="entry-top">
+              <div>
+                <h3>${escapeHtml(entry.title)}</h3>
+                <div class="meta">${escapeHtml(meta)}</div>
+              </div>
+              <button class="delete" type="button" data-id="${entry.id}" title="Delete entry">×</button>
+            </div>
+            <p>${escapeHtml(entry.note)}</p>
+          </article>
+        `;
+      }).join("");
+
+      entriesEl.querySelectorAll(".delete").forEach(button => {
+        button.addEventListener("click", () => {
+          state.entries = state.entries.filter(entry => entry.id !== button.dataset.id);
+          saveState();
+          renderEntries();
+          updateStats();
+        });
+      });
+    }
+
+    function updateStats() {
+      const allTags = state.entries
+        .flatMap(entry => entry.tags.split(",").map(tag => tag.trim()).filter(Boolean));
+      document.querySelector("#entryCount").textContent = state.entries.length;
+      document.querySelector("#tagCount").textContent = new Set(allTags).size;
+      document.querySelector("#wordCount").textContent = (state.markdown.match(/\b[\w'-]+\b/g) || []).length;
+    }
+
+    function exportData() {
+      const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `my-taste-hub-${new Date().toISOString().slice(0, 10)}.json`;
+      link.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function resetData() {
+      if (!confirm("Clear all saved My Taste Hub data on this browser?")) return;
+      localStorage.removeItem(storageKey);
+      location.reload();
+    }
+  </script>
+</body>
+</html>
