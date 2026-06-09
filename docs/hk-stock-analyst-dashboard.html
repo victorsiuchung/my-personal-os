@@ -367,16 +367,17 @@
       <div class="actions">
         <button id="themeToggle" type="button">Dark</button>
         <button id="importBtn" type="button">Import report</button>
-        <button id="connectBtn" type="button">Connect Futu API</button>
-        <button id="resetBtn" type="button">Demo data</button>
+        <button id="connectBtn" type="button">Connect HSI Futu API</button>
+        <button id="fullMarketBtn" type="button">Full market API</button>
+        <button id="resetBtn" type="button">HSI list</button>
         <button id="exportBtn" type="button" class="primary">Export JSON</button>
         <input id="fileInput" type="file" class="hidden" accept=".md,.markdown,text/markdown,text/plain">
       </div>
     </header>
 
     <section class="status">
-      <span id="sourceLabel">Demo analyst board. Import a Markdown report from hk-stock-analysis/reports for live recommendations.</span>
-      <span id="timeLabel">No report loaded</span>
+      <span id="sourceLabel">HSI constituent list loaded. Connect Futu API to analyze the 93 constituents, or import a Markdown report.</span>
+      <span id="timeLabel">HSI list mode</span>
     </section>
 
     <section class="stats">
@@ -428,13 +429,34 @@
 
   <script>
     const themeKey = "hkStockAnalyst.theme";
-    const demoStocks = [
-      { rank: 1, code: "HK.00700", name: "騰訊控股", current_price: 402.8, score: 88, trend: "上升", rsi_status: "中性", macd_signal: "金叉", volume_surge: true, boll_position: "中軌", signal: "強烈買入", news_score: 5, trade_plan: { buy_price: 402.8, stop_loss: 382.6, take_profit_1: 432.5, take_profit_2: 458.8 }, note: "多個趨勢訊號共振，若成交量保持放大，可以列入優先觀察。等待回踩 MA20 或突破確認。" },
-      { rank: 2, code: "HK.09988", name: "阿里巴巴-W", current_price: 82.4, score: 81, trend: "上升", rsi_status: "中性", macd_signal: "無", volume_surge: true, boll_position: "中軌", signal: "買入", news_score: 0, trade_plan: { buy_price: 82.4, stop_loss: 78.2, take_profit_1: 88.5, take_profit_2: 93.2 }, note: "趨勢改善但 MACD 未完全確認，適合放入 watchlist，等金叉或量價配合。" },
-      { rank: 3, code: "HK.03690", name: "美團-W", current_price: 126.2, score: 74, trend: "盤整", rsi_status: "中性", macd_signal: "金叉", volume_surge: false, boll_position: "中軌", signal: "買入", news_score: 0, trade_plan: { buy_price: 126.2, stop_loss: 119.8, take_profit_1: 136.0, take_profit_2: 142.0 }, note: "盤整中出現 MACD 改善，若突破區間上沿，技術形態會更完整。" },
-      { rank: 4, code: "HK.01299", name: "友邦保險", current_price: 61.3, score: 63, trend: "盤整", rsi_status: "超賣", macd_signal: "無", volume_surge: false, boll_position: "下軌", signal: "中性", news_score: -2, trade_plan: { buy_price: 61.3, stop_loss: 58.2, take_profit_1: 66.0, take_profit_2: 69.0 }, note: "偏反彈機會，不是強趨勢。只適合作為低吸觀察，止蝕要清楚。" },
-      { rank: 5, code: "HK.00005", name: "匯豐控股", current_price: 68.9, score: 58, trend: "盤整", rsi_status: "中性", macd_signal: "死叉", volume_surge: false, boll_position: "中軌", signal: "中性", news_score: 0, trade_plan: { buy_price: 68.9, stop_loss: 65.5, take_profit_1: 73.8, take_profit_2: 77.4 }, note: "分數一般，短線信號未夠強。偏防守型觀察，不是進攻型推介。" }
+    const analyzedDemoStocks = [
+      { rank: 1, code: "HK.00700", name: "騰訊控股", current_price: 402.8, score: 88, trend: "上升", rsi_status: "中性", macd_signal: "金叉", volume_surge: true, boll_position: "中軌", signal: "強烈買入", news_score: 5, trade_plan: { buy_price: 396.0, stop_loss: 382.6, take_profit_1: 432.5, take_profit_2: 458.8 }, note: "多個趨勢訊號共振，若成交量保持放大，可以列入優先觀察。等待回踩 MA20 或突破確認。" },
+      { rank: 2, code: "HK.09988", name: "阿里巴巴-W", current_price: 82.4, score: 81, trend: "上升", rsi_status: "中性", macd_signal: "無", volume_surge: true, boll_position: "中軌", signal: "買入", news_score: 0, trade_plan: { buy_price: 80.9, stop_loss: 78.2, take_profit_1: 88.5, take_profit_2: 93.2 }, note: "趨勢改善但 MACD 未完全確認，適合放入 watchlist，等金叉或量價配合。" },
+      { rank: 3, code: "HK.03690", name: "美團-W", current_price: 126.2, score: 74, trend: "盤整", rsi_status: "中性", macd_signal: "金叉", volume_surge: false, boll_position: "中軌", signal: "買入", news_score: 0, trade_plan: { buy_price: 123.8, stop_loss: 119.8, take_profit_1: 136.0, take_profit_2: 142.0 }, note: "盤整中出現 MACD 改善，若突破區間上沿，技術形態會更完整。" },
+      { rank: 4, code: "HK.01299", name: "友邦保險", current_price: 61.3, score: 63, trend: "盤整", rsi_status: "超賣", macd_signal: "無", volume_surge: false, boll_position: "下軌", signal: "中性", news_score: -2, trade_plan: { buy_price: 60.3, stop_loss: 58.2, take_profit_1: 66.0, take_profit_2: 69.0 }, note: "偏反彈機會，不是強趨勢。只適合作為低吸觀察，止蝕要清楚。" },
+      { rank: 5, code: "HK.00005", name: "匯豐控股", current_price: 68.9, score: 58, trend: "盤整", rsi_status: "中性", macd_signal: "死叉", volume_surge: false, boll_position: "中軌", signal: "中性", news_score: 0, trade_plan: { buy_price: 67.6, stop_loss: 65.5, take_profit_1: 73.8, take_profit_2: 77.4 }, note: "分數一般，短線信號未夠強。偏防守型觀察，不是進攻型推介。" }
     ];
+
+    const hsiConstituents = [
+      ["HK.00001","長和"],["HK.00002","中電控股"],["HK.00003","香港中華煤氣"],["HK.00005","匯豐控股"],["HK.00006","電能實業"],["HK.00011","恒生銀行"],
+      ["HK.00012","恒基地產"],["HK.00016","新鴻基地產"],["HK.00027","銀河娛樂"],["HK.00066","港鐵公司"],["HK.00101","恒隆地產"],["HK.00175","吉利汽車"],
+      ["HK.00241","阿里健康"],["HK.00267","中信股份"],["HK.00285","比亞迪電子"],["HK.00288","萬洲國際"],["HK.00291","華潤啤酒"],["HK.00300","美的集團"],
+      ["HK.00316","東方海外國際"],["HK.00322","康師傅控股"],["HK.00386","中國石油化工股份"],["HK.00388","香港交易所"],["HK.00669","創科實業"],["HK.00688","中國海外發展"],
+      ["HK.00700","騰訊控股"],["HK.00728","中國電信"],["HK.00762","中國聯通"],["HK.00823","領展房產基金"],["HK.00836","華潤電力"],["HK.00857","中國石油股份"],
+      ["HK.00868","信義玻璃"],["HK.00883","中國海洋石油"],["HK.00939","建設銀行"],["HK.00941","中國移動"],["HK.00960","龍湖集團"],["HK.00968","信義光能"],
+      ["HK.00981","中芯國際"],["HK.00992","聯想集團"],["HK.01024","快手-W"],["HK.01038","長江基建集團"],["HK.01044","恒安國際"],["HK.01088","中國神華"],
+      ["HK.01093","石藥集團"],["HK.01099","國藥控股"],["HK.01109","華潤置地"],["HK.01113","長江實業集團"],["HK.01177","中國生物製藥"],["HK.01209","華潤萬象生活"],
+      ["HK.01211","比亞迪股份"],["HK.01299","友邦保險"],["HK.01378","中國宏橋"],["HK.01398","工商銀行"],["HK.01519","極兔速遞-W"],["HK.01801","信達生物"],
+      ["HK.01810","小米集團-W"],["HK.01876","百威亞太"],["HK.01928","金沙中國有限公司"],["HK.01929","周大福"],["HK.01997","九龍倉置業"],["HK.02015","理想汽車-W"],
+      ["HK.02020","安踏體育"],["HK.02057","中通快遞-W"],["HK.02269","藥明生物"],["HK.02313","申洲國際"],["HK.02318","中國平安"],["HK.02319","蒙牛乳業"],
+      ["HK.02359","藥明康德"],["HK.02382","舜宇光學科技"],["HK.02388","中銀香港"],["HK.02600","中國鋁業"],["HK.02618","京東物流"],["HK.02628","中國人壽"],
+      ["HK.02688","新奧能源"],["HK.02899","紫金礦業"],["HK.03690","美團-W"],["HK.03692","翰森製藥"],["HK.03750","寧德時代"],["HK.03968","招商銀行"],
+      ["HK.03988","中國銀行"],["HK.03993","洛陽鉬業"],["HK.06160","百濟神州"],["HK.06181","老鋪黃金"],["HK.06618","京東健康"],["HK.06690","海爾智家"],
+      ["HK.06862","海底撈"],["HK.09618","京東集團-SW"],["HK.09633","農夫山泉"],["HK.09888","百度集團-SW"],["HK.09901","新東方-S"],["HK.09961","攜程集團-S"],
+      ["HK.09988","阿里巴巴-W"],["HK.09992","泡泡瑪特"],["HK.09999","網易-S"]
+    ];
+
+    const hsiDemoStocks = buildHsiDemoStocks();
 
     const demoNews = [
       { source: "Bloomberg Markets", title: "Bloomberg Markets source linked. Paid real-time feeds require Bloomberg Professional.", url: "https://www.bloomberg.com/markets" },
@@ -451,13 +473,14 @@
       { name: "Hexital", url: "https://github.com/MerlinR/Hexital", tag: "incremental TA", note: "增量式技術分析庫，適合將來做即時掃描或 streaming 更新。" }
     ];
 
-    let stocks = [...demoStocks];
+    let stocks = [...hsiDemoStocks];
     let selectedCode = stocks[0].code;
 
     const els = {
       themeToggle: document.querySelector("#themeToggle"),
       importBtn: document.querySelector("#importBtn"),
       connectBtn: document.querySelector("#connectBtn"),
+      fullMarketBtn: document.querySelector("#fullMarketBtn"),
       resetBtn: document.querySelector("#resetBtn"),
       exportBtn: document.querySelector("#exportBtn"),
       fileInput: document.querySelector("#fileInput"),
@@ -486,13 +509,14 @@
       localStorage.setItem(themeKey, next);
     });
     els.importBtn.addEventListener("click", () => els.fileInput.click());
-    els.connectBtn.addEventListener("click", connectRealtimeApi);
+    els.connectBtn.addEventListener("click", () => connectRealtimeApi("hsi"));
+    els.fullMarketBtn.addEventListener("click", () => connectRealtimeApi("market"));
     els.fileInput.addEventListener("change", importReport);
     els.resetBtn.addEventListener("click", () => {
-      stocks = [...demoStocks];
+      stocks = [...hsiDemoStocks];
       selectedCode = stocks[0].code;
-      els.sourceLabel.textContent = "Demo analyst board. Import a Markdown report from hk-stock-analysis/reports for live recommendations.";
-      els.timeLabel.textContent = "No report loaded";
+      els.sourceLabel.textContent = "HSI constituent list loaded. Connect Futu API to analyze the 93 constituents.";
+      els.timeLabel.textContent = "HSI list mode";
       render();
     });
     els.exportBtn.addEventListener("click", exportJson);
@@ -503,10 +527,34 @@
     renderNews(demoNews);
     render();
 
-    async function connectRealtimeApi() {
-      els.sourceLabel.textContent = "Connecting to local Futu dashboard API at http://127.0.0.1:8765...";
+    function buildHsiDemoStocks() {
+      const analyzedByCode = new Map(analyzedDemoStocks.map(stock => [stock.code, stock]));
+      return hsiConstituents.map(([code, name], index) => {
+        if (analyzedByCode.has(code)) return analyzedByCode.get(code);
+        return {
+          rank: index + 1,
+          code,
+          name,
+          current_price: 0,
+          score: 0,
+          trend: "待分析",
+          rsi_status: "待分析",
+          macd_signal: "待分析",
+          volume_surge: false,
+          boll_position: "待分析",
+          signal: "待分析",
+          news_score: 0,
+          trade_plan: {},
+          note: "此為恆指成份股清單項目。啟動本機 Futu API 後，dashboard 會計算技術評分、買入價、止蝕和止賺。"
+        };
+      });
+    }
+
+    async function connectRealtimeApi(scope) {
+      const label = scope === "hsi" ? "HSI constituent scan" : "full market scan";
+      els.sourceLabel.textContent = `Connecting to local Futu dashboard API for ${label} at http://127.0.0.1:8765...`;
       try {
-        const response = await fetch("http://127.0.0.1:8765/api/recommendations?refresh=1");
+        const response = await fetch(`http://127.0.0.1:8765/api/recommendations?refresh=1&scope=${scope}`);
         if (!response.ok) throw new Error(`API returned ${response.status}`);
         const payload = await response.json();
         stocks = (payload.recommendations || []).map(normalizeApiStock);
