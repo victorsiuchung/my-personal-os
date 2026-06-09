@@ -60,6 +60,38 @@ python main.py --host 127.0.0.1 --port 11111
 python main.py --verbose
 ```
 
+## 一年回測
+
+使用 Futu 歷史 K 線對 HSI 93 隻成份股做一年 walk-forward 回測：
+
+```bash
+python backtester.py --json
+```
+
+指定回測日期：
+
+```bash
+python backtester.py --start 2025-06-09 --end 2026-06-09 --json
+```
+
+輸出位置：
+
+```text
+reports/backtests/
+```
+
+回測會計算：
+
+- 20 日勝率
+- 60 日勝率
+- 20 / 60 日平均回報
+- 止賺一階命中率
+- 止賺二階命中率
+- 止蝕命中率
+- 最好 / 最差交易樣本
+
+注意：如果用現時 HSI 成份股回看過去一年，會有幸存者偏差。更嚴謹做法是使用一年前的 HSI 成份股名單做 out-of-sample 測試。
+
 ## 本機 Dashboard API
 
 若要讓 GitHub Pages dashboard 接近實時讀取 Futu OpenD 數據，先啟動本機 API：
