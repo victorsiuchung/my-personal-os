@@ -391,20 +391,21 @@
         <button id="themeToggle" type="button">Dark</button>
         <button id="openDc" type="button">DC Fever</button>
         <button id="openHk" type="button">HKEPC</button>
+        <button id="openNew" type="button">1st-hand refs</button>
         <button id="exportBtn" type="button" class="primary">Export Watchlist</button>
       </div>
     </header>
 
     <section class="status">
-      <span id="statusText">Snapshot: 2026-06-09 · GPU listings from DC Fever, trading titles from HKEPC</span>
-      <span>Refresh source pages before buying</span>
+      <span id="statusText">Snapshot: 2026-06-09 · Used sources: DC Fever / HKEPC · New-price refs: Centralfield / Jumbo / Pegasus</span>
+      <span>Compare against new price before buying</span>
     </section>
 
     <section class="stats">
       <div class="stat"><strong id="listingCount">0</strong><span>Tracked listings</span></div>
       <div class="stat"><strong id="goodCount">0</strong><span>Recommend checks</span></div>
       <div class="stat"><strong id="avgPrice">-</strong><span>Average priced item</span></div>
-      <div class="stat"><strong id="sourceCount">2</strong><span>Market sources</span></div>
+      <div class="stat"><strong id="sourceCount">5</strong><span>Market sources</span></div>
     </section>
 
     <section class="layout">
@@ -414,6 +415,11 @@
           <span class="pill">price observer mode</span>
         </div>
         <div id="recommendations" class="recommendations"></div>
+        <div class="panel-head">
+          <h2 class="panel-title">1st-hand reference</h2>
+          <span class="pill">new price check</span>
+        </div>
+        <div id="newRefs" class="recommendations"></div>
       </aside>
 
       <section class="panel">
@@ -446,20 +452,29 @@
   <script>
     const dcFeverUrl = "https://www.dcfever.com/trading/listing.php?id=84";
     const hkepcUrl = "https://www.hkepc.com/forum/forumdisplay.php?fid=14";
+    const centralfieldGpuUrl = "https://www.centralfield.com/product-category/VGA/Graphics-Cards%EF%BD%9CGPU-%E9%A1%AF%E7%A4%BA%E5%8D%A1?sort=0";
+    const jumboUrl = "https://www.jumbo-computer.com/zh-hk";
+    const pegasusGpuUrl = "https://shop.pegasus.hk/categories/%E9%A1%AF%E7%A4%BA%E5%8D%A1";
     const themeKey = "hkHardwareWatch.theme";
 
+    const newPriceRefs = [
+      { name: "Centralfield 中田", url: centralfieldGpuUrl, note: "GPU category page. Use it to confirm current street price and warranty-backed alternatives." },
+      { name: "Jumbo Computer 珍寶", url: jumboUrl, note: "General hardware shop reference. Check GPU, CPU, RAM, SSD, and bundle pricing." },
+      { name: "Pegasus 飛馬", url: pegasusGpuUrl, note: "GPU category page. Useful for new-stock availability and recent model pricing." }
+    ];
+
     const listings = [
-      { id: "dc-3080-zotac", source: "DC Fever", category: "GPU", title: "ZOTAC GAMING GeForce RTX 3080 Trinity", price: 2400, seller: "Mightyhammer", age: "22 小時前", url: "https://www.dcfever.com/trading/listing.php?id=84", benchmark: 2850, grade: "good", reason: "RTX 3080 at HK$2,400 is below the watch threshold for a 10GB 3080-class card. Worth checking condition, mining history, thermals, and whether it is a quick-sale price." },
-      { id: "dc-3060ti", source: "DC Fever", category: "GPU", title: "RTX 3060TI", price: 1100, seller: "jt9862", age: "22 小時前", url: "https://www.dcfever.com/trading/listing.php?id=84", benchmark: 1400, grade: "good", reason: "HK$1,100 for a 3060 Ti is attractive if the card is stable and not heavily mined. Strong budget gaming candidate." },
-      { id: "dc-3060ti-tuf", source: "DC Fever", category: "GPU", title: "ASUS TUF 3060ti 8GB", price: 1300, seller: "Mightyhammer", age: "22 小時前", url: "https://www.dcfever.com/trading/listing.php?id=84", benchmark: 1400, grade: "watch", reason: "Fair-to-good price for a better cooler model. Not a screaming bargain, but worth messaging if condition is clean." },
-      { id: "dc-3080ti-evga", source: "DC Fever", category: "GPU", title: "EVGA 3080ti", price: 3200, seller: "Mightyhammer", age: "22 小時前", url: "https://www.dcfever.com/trading/listing.php?id=84", benchmark: 3600, grade: "watch", reason: "3080 Ti at HK$3,200 is interesting. Recommend only after checking VRAM temps, warranty status, and stress test screenshots." },
-      { id: "dc-1080ti-strix", source: "DC Fever", category: "GPU", title: "NVIDIA ROG STRIX GTX1080Ti", price: 900, seller: "Rukonano", age: "23 小時前", url: "https://www.dcfever.com/trading/listing.php?id=84", benchmark: 950, grade: "watch", reason: "Old but still usable. HK$900 is acceptable if you need cheap raster performance, but power draw and age risk are high." },
-      { id: "dc-1660s", source: "DC Fever", category: "GPU", title: "MSI GTX1660 Super", price: 650, seller: "零件散賣", age: "2 日前", url: "https://www.dcfever.com/trading/listing.php?id=84", benchmark: 700, grade: "watch", reason: "Decent low-budget card. Recommend only for simple 1080p use; check fan noise and HDMI/DP ports." },
-      { id: "dc-3070ti", source: "DC Fever", category: "GPU", title: "INNO3D GeForce RTX 3070 Ti iChill X4", price: 1600, seller: "kevinfx520", age: "12 日前", url: "https://www.dcfever.com/trading/listing.php?id=84", benchmark: 1900, grade: "good", reason: "HK$1,600 is notably low for 3070 Ti-class performance. Check if sold, warranty, temperature, and whether listing age means hidden issue." },
-      { id: "dc-4070", source: "DC Fever", category: "GPU", title: "MSI GeForce RTX 4070 VENTUS 2X 12G OC", price: 3200, seller: "kevinfx520", age: "12 日前", url: "https://www.dcfever.com/trading/listing.php?id=84", benchmark: 3400, grade: "watch", reason: "Reasonable but not urgent. RTX 4070 has efficiency advantage; negotiate if warranty is short." },
-      { id: "dc-a750", source: "DC Fever", category: "GPU", title: "GUNNIR Intel Arc A750 Photon 8G OC", price: 1100, seller: "plaxton2", age: "1 日前", url: "https://www.dcfever.com/trading/listing.php?id=84", benchmark: 1150, grade: "skip", reason: "Price is around fair, but Arc driver/game compatibility matters. Buy only for specific workloads you have checked." },
-      { id: "dc-3090-strix", source: "DC Fever", category: "GPU", title: "ROG Strix RTX 3090 OC 有盒冇單冇保", price: 9000, seller: "pierce2160", age: "5 小時前", url: "https://www.dcfever.com/trading/listing.php?id=84", benchmark: 5200, grade: "skip", reason: "Price is far above normal second-hand 3090 value. No invoice/warranty makes it a pass unless there is special collectible reason." },
-      { id: "hk-7800xt", source: "HKEPC", category: "GPU", title: "sapphire 7800xt PULSE 16gb [end12/6]", price: null, seller: "HKEPC seller", age: "current forum list", url: "https://www.hkepc.com/forum/forumdisplay.php?fid=14", benchmark: 3300, grade: "watch", reason: "HKEPC listing title found, but price needs opening the thread. 7800 XT is worth checking if under HK$3,000-3,300 depending warranty." },
+      { id: "dc-3080-zotac", source: "DC Fever", category: "GPU", title: "ZOTAC GAMING GeForce RTX 3080 Trinity", price: 2400, seller: "Mightyhammer", age: "22 小時前", url: "https://www.dcfever.com/trading/listing.php?id=84", benchmark: 2850, newPriceRef: 4599, requiredDiscount: 0.35, grade: "good", reason: "RTX 3080 at HK$2,400 is below the watch threshold and far cheaper than many new midrange options. Worth checking condition, mining history, thermals, and whether it is a quick-sale price." },
+      { id: "dc-3060ti", source: "DC Fever", category: "GPU", title: "RTX 3060TI", price: 1100, seller: "jt9862", age: "22 小時前", url: "https://www.dcfever.com/trading/listing.php?id=84", benchmark: 1400, newPriceRef: 2500, requiredDiscount: 0.45, grade: "good", reason: "HK$1,100 for a 3060 Ti is attractive if the card is stable and not heavily mined. Strong budget gaming candidate." },
+      { id: "dc-3060ti-tuf", source: "DC Fever", category: "GPU", title: "ASUS TUF 3060ti 8GB", price: 1300, seller: "Mightyhammer", age: "22 小時前", url: "https://www.dcfever.com/trading/listing.php?id=84", benchmark: 1400, newPriceRef: 2500, requiredDiscount: 0.45, grade: "watch", reason: "Fair-to-good price for a better cooler model. Not a screaming bargain, but worth messaging if condition is clean." },
+      { id: "dc-3080ti-evga", source: "DC Fever", category: "GPU", title: "EVGA 3080ti", price: 3200, seller: "Mightyhammer", age: "22 小時前", url: "https://www.dcfever.com/trading/listing.php?id=84", benchmark: 3600, newPriceRef: 5200, requiredDiscount: 0.35, grade: "watch", reason: "3080 Ti at HK$3,200 is interesting, but only if temps and warranty situation are acceptable. Compare with new 4070 SUPER / 5070-class options before buying." },
+      { id: "dc-1080ti-strix", source: "DC Fever", category: "GPU", title: "NVIDIA ROG STRIX GTX1080Ti", price: 900, seller: "Rukonano", age: "23 小時前", url: "https://www.dcfever.com/trading/listing.php?id=84", benchmark: 950, newPriceRef: 1800, requiredDiscount: 0.5, grade: "watch", reason: "Old but still usable. HK$900 is acceptable if you need cheap raster performance, but power draw and age risk are high." },
+      { id: "dc-1660s", source: "DC Fever", category: "GPU", title: "MSI GTX1660 Super", price: 650, seller: "零件散賣", age: "2 日前", url: "https://www.dcfever.com/trading/listing.php?id=84", benchmark: 700, newPriceRef: 1300, requiredDiscount: 0.45, grade: "watch", reason: "Decent low-budget card. Recommend only for simple 1080p use; check fan noise and HDMI/DP ports." },
+      { id: "dc-3070ti", source: "DC Fever", category: "GPU", title: "INNO3D GeForce RTX 3070 Ti iChill X4", price: 1600, seller: "kevinfx520", age: "12 日前", url: "https://www.dcfever.com/trading/listing.php?id=84", benchmark: 1900, newPriceRef: 3600, requiredDiscount: 0.4, grade: "good", reason: "HK$1,600 is notably low for 3070 Ti-class performance. Check if sold, warranty, temperature, and whether listing age means hidden issue." },
+      { id: "dc-4070", source: "DC Fever", category: "GPU", title: "MSI GeForce RTX 4070 VENTUS 2X 12G OC", price: 3200, seller: "kevinfx520", age: "12 日前", url: "https://www.dcfever.com/trading/listing.php?id=84", benchmark: 3400, newPriceRef: 4799, requiredDiscount: 0.28, grade: "watch", reason: "Reasonable but not urgent. RTX 4070 has efficiency advantage; negotiate if warranty is short." },
+      { id: "dc-a750", source: "DC Fever", category: "GPU", title: "GUNNIR Intel Arc A750 Photon 8G OC", price: 1100, seller: "plaxton2", age: "1 日前", url: "https://www.dcfever.com/trading/listing.php?id=84", benchmark: 1150, newPriceRef: 1700, requiredDiscount: 0.4, grade: "skip", reason: "Price is around fair, but Arc driver/game compatibility matters. Buy only for specific workloads you have checked." },
+      { id: "dc-3090-strix", source: "DC Fever", category: "GPU", title: "ROG Strix RTX 3090 OC 有盒冇單冇保", price: 9000, seller: "pierce2160", age: "5 小時前", url: "https://www.dcfever.com/trading/listing.php?id=84", benchmark: 5200, newPriceRef: 7600, requiredDiscount: 0.35, grade: "skip", reason: "Price is far above normal second-hand 3090 value. No invoice/warranty makes it a pass unless there is special collectible reason." },
+      { id: "hk-7800xt", source: "HKEPC", category: "GPU", title: "sapphire 7800xt PULSE 16gb [end12/6]", price: null, seller: "HKEPC seller", age: "current forum list", url: "https://www.hkepc.com/forum/forumdisplay.php?fid=14", benchmark: 3300, newPriceRef: 3900, requiredDiscount: 0.25, grade: "watch", reason: "HKEPC listing title found, but price needs opening the thread. 7800 XT is worth checking if under HK$3,000-3,300 depending warranty and one-hand pricing." },
       { id: "hk-laptop-ram", source: "HKEPC", category: "RAM", title: "Laptop RAM DDR4 & DDR5 (12/6 End)", price: null, seller: "HKEPC seller", age: "current forum list", url: "https://www.hkepc.com/forum/forumdisplay.php?fid=14", benchmark: null, grade: "watch", reason: "No price in index. Worth checking only if capacity/speed matches your need; RAM bargains depend heavily on exact kit size." },
       { id: "hk-qnap", source: "HKEPC", category: "NAS", title: "QNAP TS-563 NAS 8G RAM end 10-6-2026", price: null, seller: "HKEPC seller", age: "current forum list", url: "https://www.hkepc.com/forum/forumdisplay.php?fid=14", benchmark: null, grade: "watch", reason: "NAS can be good value, but check drive bays, PSU health, firmware support, and whether disks are included." }
     ];
@@ -470,10 +485,12 @@
       themeToggle: document.querySelector("#themeToggle"),
       openDc: document.querySelector("#openDc"),
       openHk: document.querySelector("#openHk"),
+      openNew: document.querySelector("#openNew"),
       exportBtn: document.querySelector("#exportBtn"),
       searchInput: document.querySelector("#searchInput"),
       gradeFilter: document.querySelector("#gradeFilter"),
       recommendations: document.querySelector("#recommendations"),
+      newRefs: document.querySelector("#newRefs"),
       listingList: document.querySelector("#listingList"),
       detailMeta: document.querySelector("#detailMeta"),
       detailTitle: document.querySelector("#detailTitle"),
@@ -495,6 +512,7 @@
     });
     els.openDc.addEventListener("click", () => window.open(dcFeverUrl, "_blank", "noreferrer"));
     els.openHk.addEventListener("click", () => window.open(hkepcUrl, "_blank", "noreferrer"));
+    els.openNew.addEventListener("click", () => window.open(centralfieldGpuUrl, "_blank", "noreferrer"));
     els.exportBtn.addEventListener("click", exportWatchlist);
     els.searchInput.addEventListener("input", render);
     els.gradeFilter.addEventListener("change", render);
@@ -505,8 +523,10 @@
     function recommendationScore(item) {
       if (!item.price || !item.benchmark) return item.grade === "watch" ? 68 : 40;
       const discount = Math.max(0, (item.benchmark - item.price) / item.benchmark);
+      const newDiscount = item.newPriceRef ? Math.max(0, (item.newPriceRef - item.price) / item.newPriceRef) : 0;
       const freshness = /小時/.test(item.age) ? 10 : /1 日|2 日/.test(item.age) ? 6 : 0;
-      return Math.round(Math.min(98, discount * 100 + 58 + freshness));
+      const newPriceBonus = newDiscount >= (item.requiredDiscount || 0.35) ? 12 : -10;
+      return Math.round(Math.min(98, discount * 76 + newDiscount * 42 + 46 + freshness + newPriceBonus));
     }
 
     function filteredListings() {
@@ -524,6 +544,16 @@
       els.listingCount.textContent = listings.length;
       els.goodCount.textContent = listings.filter(item => item.grade === "good").length;
       els.avgPrice.textContent = `HK$${Math.round(avg).toLocaleString()}`;
+      els.newRefs.innerHTML = newPriceRefs.map(ref => `
+        <button class="rec watch" type="button" data-url="${ref.url}">
+          <div class="title">${escapeHtml(ref.name)}</div>
+          <div class="meta"><span class="pill">new price source</span></div>
+          <div class="meta">${escapeHtml(ref.note)}</div>
+        </button>
+      `).join("");
+      els.newRefs.querySelectorAll(".rec").forEach(button => {
+        button.addEventListener("click", () => window.open(button.dataset.url, "_blank", "noreferrer"));
+      });
 
       const recs = listings
         .filter(item => item.grade === "good" || item.grade === "watch")
@@ -579,6 +609,8 @@
           <section class="box"><h3>Observer grade</h3><p>${gradeText(item.grade)} · score ${recommendationScore(item)}</p></section>
           <section class="box"><h3>Reference price</h3><p>${item.benchmark ? `HK$${item.benchmark.toLocaleString()} watch threshold` : "Needs manual benchmark"}</p></section>
           <section class="box"><h3>Estimated edge</h3><p>${delta === null ? "Unknown until price is confirmed" : delta > 0 ? `HK$${delta.toLocaleString()} below threshold` : `HK$${Math.abs(delta).toLocaleString()} above threshold`}</p></section>
+          <section class="box"><h3>New-price reference</h3><p>${newPriceText(item)}</p></section>
+          <section class="box"><h3>Used vs new gap</h3><p>${usedVsNewText(item)}</p></section>
           <section class="box"><h3>Seller / source</h3><p>${escapeHtml(item.seller)} · ${escapeHtml(item.source)}</p></section>
           <section class="box"><h3>Buy-check notes</h3><p>Ask for stress test, temperature screenshot, invoice/warranty, serial photo, ports/fan condition, and exact pickup location before committing.</p></section>
         </div>
@@ -590,6 +622,22 @@
       if (grade === "good") return "Recommend checking";
       if (grade === "watch") return "Watch / negotiate";
       return "Skip or low priority";
+    }
+
+    function newPriceText(item) {
+      if (!item.newPriceRef) return "No direct new-price reference yet";
+      return `Approx. HK$${item.newPriceRef.toLocaleString()} from first-hand market reference. Check Centralfield, Jumbo, and Pegasus before buying.`;
+    }
+
+    function usedVsNewText(item) {
+      if (!item.price || !item.newPriceRef) return "Confirm asking price first, then compare against current new price.";
+      const discount = (item.newPriceRef - item.price) / item.newPriceRef;
+      const required = item.requiredDiscount || 0.35;
+      const pct = Math.round(discount * 100);
+      const needed = Math.round(required * 100);
+      return discount >= required
+        ? `${pct}% below new-price reference. Clears my ${needed}% minimum used discount rule.`
+        : `${pct}% below new-price reference. I would negotiate; target at least ${needed}% below new.`;
     }
 
     function exportWatchlist() {
