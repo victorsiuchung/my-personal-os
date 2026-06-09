@@ -123,6 +123,39 @@ class FutuConnector:
         return self._ensure_ok(ret, data, f"獲取 K 線失敗：{symbol}")
 
     @limited_call
+    def get_history_kline(
+        self,
+        symbol: str,
+        start: str,
+        end: str,
+        ktype: Any = None,
+        max_count: int = 1000,
+    ) -> pd.DataFrame:
+        """獲取歷史 K 線，用於回測。"""
+        if ktype is None:
+            ktype = KLType.K_DAY
+        all_pages = []
+        page_req_key = None
+
+        while True:
+            ret, data, page_req_key = self.quote_ctx.request_history_kline(
+                code=symbol,
+                start=start,
+                end=end,
+                ktype=ktype,
+                autype=AuType.QFQ,
+                max_count=max_count,
+                page_req_key=page_req_key,
+            )
+            all_pages.append(self._ensure_ok(ret, data, f"獲取歷史 K 線失敗：{symbol}"))
+            if page_req_key is None:
+                break
+
+        if not all_pages:
+            return pd.DataFrame()
+        return pd.concat(all_pages, ignore_index=True)
+
+    @limited_call
     def get_all_stock_list(self, market: str = "HK") -> pd.DataFrame:
         """獲取全市場股票列表。
 
@@ -185,4 +218,3 @@ def chunked(items: Iterable[str], size: int) -> Iterable[list[str]]:
             batch = []
     if batch:
         yield batch
-
