@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 
 class DashboardHandler(BaseHTTPRequestHandler):
     connector: FutuConnector | None = None
-    cached_payload: dict | None = None
+    cached_payloads: dict[str, dict] = {}
 
     def do_OPTIONS(self) -> None:  # noqa: N802
         self.send_response(204)
@@ -45,20 +45,26 @@ class DashboardHandler(BaseHTTPRequestHandler):
         if parsed.path == "/api/recommendations":
             query = parse_qs(parsed.query)
             refresh = query.get("refresh", ["0"])[0] == "1"
-            self.write_json(self.get_recommendations(refresh=refresh))
+            scope = query.get("scope", ["market"])[0]
+            self.write_json(self.get_recommendations(refresh=refresh, scope=scope))
             return
         self.send_response(404)
         self.send_cors_headers()
         self.end_headers()
 
-    def get_recommendations(self, refresh: bool = False) -> dict:
-        if self.cached_payload and not refresh:
-            return self.cached_payload
+    def get_recommendations(self, refresh: bool = False, scope: str = "market") -> dict:
+        if scope in self.cached_payloads and not refresh:
+            return self.cached_payloads[scope]
         if self.connector is None:
             raise RuntimeError("Futu connector is not initialized")
 
         scanner = StockScanner(self.connector)
-        results, stats = scanner.scan_market()
+        if scope == "hsi":
+            results, stats = scanner.scan_hsi()
+            source = "Futu OpenD realtime HSI constituent scan"
+        else:
+            results, stats = scanner.scan_market()
+            source = "Futu OpenD realtime full market scan"
         news_items = fetch_market_news(limit=30)
 
         enriched = []
@@ -73,13 +79,13 @@ class DashboardHandler(BaseHTTPRequestHandler):
 
         top = rank_recommendations(enriched, TOP_N)
         payload = {
-            "source": "Futu OpenD realtime scan",
+            "source": source,
             "stats": stats,
             "generated_at": __import__("datetime").datetime.now().isoformat(),
             "news": news_items,
             "recommendations": top,
         }
-        self.cached_payload = payload
+        self.cached_payloads[scope] = payload
         return payload
 
     def write_json(self, payload: dict) -> None:
@@ -130,4 +136,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
-
