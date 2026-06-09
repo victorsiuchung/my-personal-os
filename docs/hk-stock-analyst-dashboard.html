@@ -367,6 +367,7 @@
       <div class="actions">
         <button id="themeToggle" type="button">Dark</button>
         <button id="importBtn" type="button">Import report</button>
+        <button id="connectBtn" type="button">Connect Futu API</button>
         <button id="resetBtn" type="button">Demo data</button>
         <button id="exportBtn" type="button" class="primary">Export JSON</button>
         <input id="fileInput" type="file" class="hidden" accept=".md,.markdown,text/markdown,text/plain">
@@ -416,6 +417,11 @@
           <span class="pill">GitHub refs</span>
         </div>
         <div id="toolList" class="stack"></div>
+        <div class="panel-head">
+          <h2 class="panel-title">實時財經消息</h2>
+          <span class="pill">news impact</span>
+        </div>
+        <div id="newsList" class="stack"></div>
       </aside>
     </section>
   </main>
@@ -423,11 +429,18 @@
   <script>
     const themeKey = "hkStockAnalyst.theme";
     const demoStocks = [
-      { rank: 1, code: "HK.00700", name: "騰訊控股", current_price: 402.8, score: 88, trend: "上升", rsi_status: "中性", macd_signal: "金叉", volume_surge: true, boll_position: "中軌", signal: "強烈買入", note: "多個趨勢訊號共振，若成交量保持放大，可以列入優先觀察。等待回踩 MA20 或突破確認。" },
-      { rank: 2, code: "HK.09988", name: "阿里巴巴-W", current_price: 82.4, score: 81, trend: "上升", rsi_status: "中性", macd_signal: "無", volume_surge: true, boll_position: "中軌", signal: "買入", note: "趨勢改善但 MACD 未完全確認，適合放入 watchlist，等金叉或量價配合。" },
-      { rank: 3, code: "HK.03690", name: "美團-W", current_price: 126.2, score: 74, trend: "盤整", rsi_status: "中性", macd_signal: "金叉", volume_surge: false, boll_position: "中軌", signal: "買入", note: "盤整中出現 MACD 改善，若突破區間上沿，技術形態會更完整。" },
-      { rank: 4, code: "HK.01299", name: "友邦保險", current_price: 61.3, score: 63, trend: "盤整", rsi_status: "超賣", macd_signal: "無", volume_surge: false, boll_position: "下軌", signal: "中性", note: "偏反彈機會，不是強趨勢。只適合作為低吸觀察，止蝕要清楚。" },
-      { rank: 5, code: "HK.00005", name: "匯豐控股", current_price: 68.9, score: 58, trend: "盤整", rsi_status: "中性", macd_signal: "死叉", volume_surge: false, boll_position: "中軌", signal: "中性", note: "分數一般，短線信號未夠強。偏防守型觀察，不是進攻型推介。" }
+      { rank: 1, code: "HK.00700", name: "騰訊控股", current_price: 402.8, score: 88, trend: "上升", rsi_status: "中性", macd_signal: "金叉", volume_surge: true, boll_position: "中軌", signal: "強烈買入", news_score: 5, trade_plan: { buy_price: 402.8, stop_loss: 382.6, take_profit_1: 432.5, take_profit_2: 458.8 }, note: "多個趨勢訊號共振，若成交量保持放大，可以列入優先觀察。等待回踩 MA20 或突破確認。" },
+      { rank: 2, code: "HK.09988", name: "阿里巴巴-W", current_price: 82.4, score: 81, trend: "上升", rsi_status: "中性", macd_signal: "無", volume_surge: true, boll_position: "中軌", signal: "買入", news_score: 0, trade_plan: { buy_price: 82.4, stop_loss: 78.2, take_profit_1: 88.5, take_profit_2: 93.2 }, note: "趨勢改善但 MACD 未完全確認，適合放入 watchlist，等金叉或量價配合。" },
+      { rank: 3, code: "HK.03690", name: "美團-W", current_price: 126.2, score: 74, trend: "盤整", rsi_status: "中性", macd_signal: "金叉", volume_surge: false, boll_position: "中軌", signal: "買入", news_score: 0, trade_plan: { buy_price: 126.2, stop_loss: 119.8, take_profit_1: 136.0, take_profit_2: 142.0 }, note: "盤整中出現 MACD 改善，若突破區間上沿，技術形態會更完整。" },
+      { rank: 4, code: "HK.01299", name: "友邦保險", current_price: 61.3, score: 63, trend: "盤整", rsi_status: "超賣", macd_signal: "無", volume_surge: false, boll_position: "下軌", signal: "中性", news_score: -2, trade_plan: { buy_price: 61.3, stop_loss: 58.2, take_profit_1: 66.0, take_profit_2: 69.0 }, note: "偏反彈機會，不是強趨勢。只適合作為低吸觀察，止蝕要清楚。" },
+      { rank: 5, code: "HK.00005", name: "匯豐控股", current_price: 68.9, score: 58, trend: "盤整", rsi_status: "中性", macd_signal: "死叉", volume_surge: false, boll_position: "中軌", signal: "中性", news_score: 0, trade_plan: { buy_price: 68.9, stop_loss: 65.5, take_profit_1: 73.8, take_profit_2: 77.4 }, note: "分數一般，短線信號未夠強。偏防守型觀察，不是進攻型推介。" }
+    ];
+
+    const demoNews = [
+      { source: "Bloomberg Markets", title: "Bloomberg Markets source linked. Paid real-time feeds require Bloomberg Professional.", url: "https://www.bloomberg.com/markets" },
+      { source: "Reuters Markets", title: "Reuters market headlines should be checked for macro and sector impact.", url: "https://www.reuters.com/markets/" },
+      { source: "HKEX / HKEXnews", title: "Official announcements remain the highest-priority stock-specific source.", url: "https://www.hkexnews.hk/index.htm" },
+      { source: "AAStocks", title: "AAStocks latest HK market news is useful for local headline monitoring.", url: "https://www.aastocks.com/en/stocks/news/aafn/latest-news" }
     ];
 
     const tools = [
@@ -444,6 +457,7 @@
     const els = {
       themeToggle: document.querySelector("#themeToggle"),
       importBtn: document.querySelector("#importBtn"),
+      connectBtn: document.querySelector("#connectBtn"),
       resetBtn: document.querySelector("#resetBtn"),
       exportBtn: document.querySelector("#exportBtn"),
       fileInput: document.querySelector("#fileInput"),
@@ -459,7 +473,8 @@
       detailMeta: document.querySelector("#detailMeta"),
       detailTitle: document.querySelector("#detailTitle"),
       detailBody: document.querySelector("#detailBody"),
-      toolList: document.querySelector("#toolList")
+      toolList: document.querySelector("#toolList"),
+      newsList: document.querySelector("#newsList")
     };
 
     document.body.dataset.theme = localStorage.getItem(themeKey) || "dark";
@@ -471,6 +486,7 @@
       localStorage.setItem(themeKey, next);
     });
     els.importBtn.addEventListener("click", () => els.fileInput.click());
+    els.connectBtn.addEventListener("click", connectRealtimeApi);
     els.fileInput.addEventListener("change", importReport);
     els.resetBtn.addEventListener("click", () => {
       stocks = [...demoStocks];
@@ -484,7 +500,26 @@
     els.signalFilter.addEventListener("change", render);
 
     renderTools();
+    renderNews(demoNews);
     render();
+
+    async function connectRealtimeApi() {
+      els.sourceLabel.textContent = "Connecting to local Futu dashboard API at http://127.0.0.1:8765...";
+      try {
+        const response = await fetch("http://127.0.0.1:8765/api/recommendations?refresh=1");
+        if (!response.ok) throw new Error(`API returned ${response.status}`);
+        const payload = await response.json();
+        stocks = (payload.recommendations || []).map(normalizeApiStock);
+        if (!stocks.length) throw new Error("No recommendations returned");
+        selectedCode = stocks[0].code;
+        els.sourceLabel.textContent = payload.source || "Futu OpenD realtime scan";
+        els.timeLabel.textContent = new Date(payload.generated_at || Date.now()).toLocaleString([], { dateStyle: "medium", timeStyle: "short" });
+        renderNews(payload.news || demoNews);
+        render();
+      } catch (error) {
+        els.sourceLabel.textContent = `Local Futu API not connected: ${error.message}. Start python dashboard_server.py, or import a report.`;
+      }
+    }
 
     function importReport(event) {
       const file = event.target.files[0];
@@ -518,17 +553,39 @@
           code: cells[1],
           name: cells[2],
           current_price: Number(cells[3]) || 0,
-          score: Number(cells[4]) || 0,
-          trend: cells[5],
-          rsi_status: cells[6],
+          trade_plan: parseTradePlan(cells),
+          score: Number(cells.length >= 12 ? cells[8] : cells[4]) || 0,
+          trend: cells.length >= 12 ? cells[9] : cells[5],
+          rsi_status: cells.length >= 12 ? cells[10] : cells[6],
           macd_signal: "未載入",
           volume_surge: false,
           boll_position: "未載入",
-          signal: cells[7],
-          note: analystNote(Number(cells[4]) || 0, cells[5], cells[6], cells[7])
+          signal: cells.length >= 12 ? cells[11] : cells[7],
+          news_score: 0,
+          note: analystNote(Number(cells.length >= 12 ? cells[8] : cells[4]) || 0, cells.length >= 12 ? cells[9] : cells[5], cells.length >= 12 ? cells[10] : cells[6], cells.length >= 12 ? cells[11] : cells[7])
         });
       }
       return rows;
+    }
+
+    function parseTradePlan(cells) {
+      if (cells.length < 12) return {};
+      return {
+        buy_price: Number(cells[4]) || 0,
+        stop_loss: Number(cells[5]) || 0,
+        take_profit_1: Number(cells[6]) || 0,
+        take_profit_2: Number(cells[7]) || 0
+      };
+    }
+
+    function normalizeApiStock(item) {
+      return {
+        ...item,
+        score: Number(item.score) || 0,
+        current_price: Number(item.current_price) || 0,
+        news_score: Number(item.news_score) || 0,
+        trade_plan: item.trade_plan || {}
+      };
     }
 
     function analystNote(score, trend, rsi, signal) {
@@ -569,6 +626,7 @@
           <span class="title">${escapeHtml(stock.code)} · ${escapeHtml(stock.name)}</span>
           <span class="meta">
             <span class="pill score">${stock.score}分</span>
+            <span class="pill ${stock.news_score > 0 ? "buy" : stock.news_score < 0 ? "risk" : ""}">News ${stock.news_score || 0}</span>
             <span class="pill ${stock.score >= 70 ? "buy" : stock.score < 40 ? "risk" : "warn"}">${escapeHtml(stock.signal)}</span>
             <span class="pill">${escapeHtml(stock.trend)}</span>
             <span class="pill">RSI ${escapeHtml(stock.rsi_status)}</span>
@@ -591,16 +649,28 @@
         <div class="grid">
           <section class="box"><h3>技術評分</h3><p class="score">${stock.score}/100 · ${escapeHtml(stock.signal)}</p></section>
           <section class="box"><h3>分析員建議</h3><p>${recommendationText(stock)}</p></section>
+          <section class="box"><h3>買入價</h3><p class="buy">${formatPrice(stock.trade_plan?.buy_price || stock.current_price)}</p></section>
+          <section class="box"><h3>止蝕價</h3><p class="risk">${formatPrice(stock.trade_plan?.stop_loss)}</p></section>
+          <section class="box"><h3>止賺（一階）</h3><p class="buy">${formatPrice(stock.trade_plan?.take_profit_1)}</p></section>
+          <section class="box"><h3>止賺（二階）</h3><p class="buy">${formatPrice(stock.trade_plan?.take_profit_2)}</p></section>
           <section class="box"><h3>趨勢</h3><p>${escapeHtml(stock.trend)}</p></section>
           <section class="box"><h3>RSI 狀態</h3><p>${escapeHtml(stock.rsi_status)}</p></section>
+          <section class="box"><h3>消息分數</h3><p class="${stock.news_score > 0 ? "buy" : stock.news_score < 0 ? "risk" : ""}">${stock.news_score || 0}</p></section>
           <section class="box"><h3>MACD</h3><p>${escapeHtml(stock.macd_signal || "未載入")}</p></section>
           <section class="box"><h3>成交量異動</h3><p>${stock.volume_surge ? "有放量訊號" : "未見明顯放量"}</p></section>
           <section class="box"><h3>布林帶位置</h3><p>${escapeHtml(stock.boll_position || "未載入")}</p></section>
           <section class="box"><h3>現價</h3><p>${formatPrice(stock.current_price)}</p></section>
         </div>
         <section class="box" style="margin-top:12px;"><h3>股票分析員觀點</h3><p>${escapeHtml(stock.note)}</p></section>
+        <section class="box" style="margin-top:12px;"><h3>消息考量</h3><p>${newsText(stock)}</p></section>
         <section class="box" style="margin-top:12px;"><h3>風險提示</h3><p>呢個 dashboard 只係展示技術掃描結果，不構成投資建議。落盤前要再睇大市、成交深度、公司公告、業績、行業消息同自己風險承受能力。</p></section>
       `;
+    }
+
+    function newsText(stock) {
+      const matched = stock.matched_news || [];
+      if (!matched.length) return `暫未匹配到明確個股消息。仍建議查看 Bloomberg / Reuters / HKEXnews / AAStocks。`;
+      return matched.map(item => `${item.source || "News"}: ${item.title}`).join(" · ");
     }
 
     function recommendationText(stock) {
@@ -616,6 +686,16 @@
           <h3>${escapeHtml(tool.name)} · ${escapeHtml(tool.tag)}</h3>
           <p>${escapeHtml(tool.note)}</p>
           <p style="margin-top:8px;"><a class="link" href="${tool.url}" target="_blank" rel="noreferrer">Open project</a></p>
+        </article>
+      `).join("");
+    }
+
+    function renderNews(items) {
+      els.newsList.innerHTML = (items || []).slice(0, 8).map(item => `
+        <article class="tool">
+          <h3>${escapeHtml(item.source || "News")}</h3>
+          <p>${escapeHtml(item.title || "")}</p>
+          <p style="margin-top:8px;"><a class="link" href="${item.url || "#"}" target="_blank" rel="noreferrer">Open source</a></p>
         </article>
       `).join("");
     }
