@@ -369,6 +369,7 @@
         <button id="importBtn" type="button">Import report</button>
         <button id="connectBtn" type="button">Connect HSI Futu API</button>
         <button id="fullMarketBtn" type="button">Full market API</button>
+        <button id="backtestInfoBtn" type="button">Backtest</button>
         <button id="resetBtn" type="button">HSI list</button>
         <button id="exportBtn" type="button" class="primary">Export JSON</button>
         <input id="fileInput" type="file" class="hidden" accept=".md,.markdown,text/markdown,text/plain">
@@ -511,6 +512,7 @@
     els.importBtn.addEventListener("click", () => els.fileInput.click());
     els.connectBtn.addEventListener("click", () => connectRealtimeApi("hsi"));
     els.fullMarketBtn.addEventListener("click", () => connectRealtimeApi("market"));
+    els.backtestInfoBtn.addEventListener("click", showBacktestInfo);
     els.fileInput.addEventListener("change", importReport);
     els.resetBtn.addEventListener("click", () => {
       stocks = [...hsiDemoStocks];
@@ -736,6 +738,20 @@
           <p style="margin-top:8px;"><a class="link" href="${tool.url}" target="_blank" rel="noreferrer">Open project</a></p>
         </article>
       `).join("");
+    }
+
+    function showBacktestInfo() {
+      els.detailMeta.textContent = "Backtest workflow";
+      els.detailTitle.textContent = "一年回測：模擬一年前開始每日分析";
+      els.detailBody.innerHTML = `
+        <div class="grid">
+          <section class="box"><h3>Run command</h3><p>cd hk-stock-analysis<br>python backtester.py --json</p></section>
+          <section class="box"><h3>Data source</h3><p>Futu request_history_kline · HSI 93 constituents</p></section>
+          <section class="box"><h3>Metrics</h3><p>20/60 日勝率、平均回報、止蝕命中率、止賺一/二階命中率</p></section>
+          <section class="box"><h3>Model improvement</h3><p>如果勝率不足，優先加大市 regime filter、相對強弱、ATR 風險調整、成交額排序。</p></section>
+        </div>
+        <section class="box" style="margin-top:12px;"><h3>Important</h3><p>我而家未能直接跑實際準確率，因為需要你本機 Futu OpenD 歷史 K 線權限。程式已經準備好，你開 OpenD 後就可以跑。</p></section>
+      `;
     }
 
     function renderNews(items) {
