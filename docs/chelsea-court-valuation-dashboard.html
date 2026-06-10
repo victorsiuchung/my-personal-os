@@ -68,8 +68,22 @@
     .sidebar { display:grid; gap:14px; position:sticky; top:16px; }
     .bank-buttons { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
     .footer-note { color:var(--muted); font-size:12px; line-height:1.55; }
+    .tx-cards { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:10px; margin-top:12px; }
+    .tx-card { border:1px solid var(--line); border-radius:8px; background:#fff; padding:13px; cursor:pointer; transition:transform .16s ease, box-shadow .16s ease; }
+    .tx-card:hover { transform:translateY(-2px); box-shadow:0 12px 28px rgba(15,23,42,.08); }
+    .tx-card h3 { margin:0 0 8px; font-size:15px; line-height:1.35; }
+    .tx-card .meta { display:flex; gap:6px; flex-wrap:wrap; margin:8px 0; }
+    .tx-card strong { font-size:20px; }
+    .modal-backdrop { position:fixed; inset:0; display:none; place-items:center; background:rgba(15,23,42,.62); padding:18px; z-index:20; }
+    .modal { width:min(620px, 100%); border-radius:8px; background:#fff; box-shadow:var(--shadow); overflow:hidden; }
+    .modal header { width:auto; margin:0; display:flex; justify-content:space-between; gap:16px; padding:16px; border-bottom:1px solid var(--line); }
+    .modal header h2 { margin:0; font-size:18px; border:0; padding:0; }
+    .modal-body { padding:16px; display:grid; gap:12px; }
+    .detail-grid { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:10px; }
+    .detail-box { border:1px solid var(--line); border-radius:8px; padding:11px; }
+    .detail-box span { display:block; color:var(--muted); font-size:12px; margin-bottom:4px; }
     @media (max-width: 1050px) { header, main { grid-template-columns:1fr; } .sidebar { position:static; } .grid { grid-template-columns:1fr; } }
-    @media (max-width: 760px) { .form-grid { grid-template-columns:1fr; } .bank-buttons { grid-template-columns:1fr; } .hero { padding:22px; } }
+    @media (max-width: 760px) { .form-grid, .tx-cards, .detail-grid { grid-template-columns:1fr; } .bank-buttons { grid-template-columns:1fr; } .hero { padding:22px; } }
   </style>
 </head>
 <body>
@@ -184,6 +198,10 @@
           <tbody id="txRows"></tbody>
         </table>
 
+        <h2 style="border:0;padding:24px 0 12px">Latest Registered Transactions</h2>
+        <div class="notice">以下為美聯爵悅庭頁面列出的最近註冊處成交 snapshot；按每張卡可睇詳情及開原始來源。你的單位是北爵軒 26/F F室，所以同座、相近面積、同字母單位會較有參考價值。</div>
+        <div id="latestTransactions" class="tx-cards"></div>
+
         <h2 style="border:0;padding:24px 0 12px">Valuation Chart</h2>
         <div id="chart" class="chart"></div>
       </div>
@@ -225,6 +243,28 @@
       </section>
 
       <section class="panel">
+        <h2>估價可行方法</h2>
+        <div class="panel-body source-list">
+          <div class="source-card">
+            <h3>1. 官方銀行估價</h3>
+            <p>最接近按揭實務，但通常要人手填地址、座數、樓層、單位；不建議自動提交。</p>
+          </div>
+          <div class="source-card">
+            <h3>2. CentaEstimate / 代理估價</h3>
+            <p>可作第二 opinion，較易打開，但估值模型同銀行未必一致。</p>
+          </div>
+          <div class="source-card">
+            <h3>3. 半自動記錄</h3>
+            <p>之後可以加 backend，每日提醒你開銀行頁，把估值貼入表格，然後同步 Notion / GitHub JSON。</p>
+          </div>
+          <div class="source-card">
+            <h3>4. 瀏覽器自動填表</h3>
+            <p>技術上可做，但要你明確批准，並避開登入、驗證碼、個人資料及銀行條款風險。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
         <h2>Property Facts</h2>
         <div class="panel-body">
           <table>
@@ -242,8 +282,34 @@
     </aside>
   </main>
 
+  <div id="txModal" class="modal-backdrop" onclick="closeTxModal(event)">
+    <section class="modal" role="dialog" aria-modal="true">
+      <header>
+        <h2 id="modalTitle">Transaction details</h2>
+        <button class="button secondary" onclick="closeTxModal()">Close</button>
+      </header>
+      <div id="modalBody" class="modal-body"></div>
+    </section>
+  </div>
+
   <script>
     const storeKey = "chelsea-court-watch-v1";
+    const sourceUrls = {
+      midlandEstate: "https://www.midland.com.hk/zh-hk/estate/%E6%96%B0%E7%95%8C-%E8%8D%83%E7%81%A3%E8%A5%BF-%E7%88%B5%E6%82%85%E5%BA%AD-E000002042",
+      centalineEstate: "https://hk.centanet.com/estate/en/Chelsea-Court/2-AEPPWPPRPK"
+    };
+    const latestTransactions = [
+      { date:"09/12/2025", block:"西爵軒 (B1)", floor:"51/F", flat:"C", rooms:"4房2廳", price:11140000, area:716, psf:15559, previous:"HK$545萬 / +104%", holding:"15.7年", source:"Midland / Land Registry", url:sourceUrls.midlandEstate },
+      { date:"07/12/2025", block:"東爵軒 (A1)", floor:"51/F", flat:"H", rooms:"3房2廳", price:7600000, area:554, psf:13718, previous:"HK$306萬 / +148%", holding:"16.7年", source:"Midland / Land Registry", url:sourceUrls.midlandEstate },
+      { date:"26/11/2025", block:"西爵軒 (B1)", floor:"25/F", flat:"H", rooms:"1房2廳", price:5500000, area:464, psf:11853, previous:"HK$670萬 / -18%", holding:"5.8年", source:"Midland / Land Registry", url:sourceUrls.midlandEstate },
+      { date:"25/11/2025", block:"北爵軒 (B2)", floor:"6/F", flat:"H", rooms:"1房2廳", price:5750000, area:464, psf:12392, previous:"HK$490萬 / +17%", holding:"11.0年", source:"Midland / Land Registry", url:sourceUrls.midlandEstate },
+      { date:"24/11/2025", block:"西爵軒 (B1)", floor:"28/F", flat:"H", rooms:"1房2廳", price:6300000, area:464, psf:13578, previous:"HK$318萬 / +98%", holding:"14.9年", source:"Midland / Land Registry", url:sourceUrls.midlandEstate },
+      { date:"24/11/2025", block:"北爵軒 (B2)", floor:"36/F", flat:"C", rooms:"3房2廳", price:9300000, area:722, psf:12881, previous:"HK$481萬 / +93%", holding:"21.0年", source:"Midland / Land Registry", url:sourceUrls.midlandEstate },
+      { date:"23/11/2025", block:"西爵軒 (B1)", floor:"43/F", flat:"F", rooms:"1房2廳", price:6490000, area:467, psf:13897, previous:"HK$271萬 / +139%", holding:"21.0年", source:"Midland / Land Registry", url:sourceUrls.midlandEstate },
+      { date:"19/11/2025", block:"西爵軒 (B1)", floor:"55/F", flat:"G", rooms:"1房2廳", price:8190000, area:559, psf:14648, previous:"HK$638萬 / +28%", holding:"12.4年", source:"Midland / Land Registry", url:sourceUrls.midlandEstate },
+      { date:"09/11/2025", block:"南爵軒 (A2)", floor:"36/F", flat:"C", rooms:"1房2廳", price:6000000, area:469, psf:12793, previous:"HK$362萬 / +66%", holding:"14.3年", source:"Midland / Land Registry", url:sourceUrls.midlandEstate },
+      { date:"05/11/2025", block:"西爵軒 (B1)", floor:"21/F", flat:"C", rooms:"4房2廳", price:8000000, area:722, psf:11080, previous:"特殊成交個案", holding:"--", source:"Midland / Land Registry", url:sourceUrls.midlandEstate }
+    ];
     const defaults = {
       area: "",
       banks: [],
@@ -312,6 +378,7 @@
       document.querySelector("#bankCount").textContent = state.banks.length;
       renderBankRows(area);
       renderTxRows();
+      renderLatestTransactions();
       renderRange(area);
       renderChart(area);
     }
@@ -339,8 +406,45 @@
         </tr>
       `).join("");
     }
+    function renderLatestTransactions() {
+      document.querySelector("#latestTransactions").innerHTML = latestTransactions.map((item, index) => `
+        <article class="tx-card" onclick="openTxModal(${index})">
+          <h3>${escapeHtml(item.block)} ${escapeHtml(item.floor)} ${escapeHtml(item.flat)}室</h3>
+          <strong>HK$${fmt.format(item.price)}</strong>
+          <div class="meta">
+            <span class="pill">${escapeHtml(item.date)}</span>
+            <span class="pill">實 ${fmt.format(item.area)} 呎</span>
+            <span class="pill">@ HK$${fmt.format(item.psf)}</span>
+          </div>
+          <p class="footer-note">${escapeHtml(item.rooms)} · ${escapeHtml(item.source)}</p>
+        </article>
+      `).join("");
+    }
+    function openTxModal(index) {
+      const item = latestTransactions[index];
+      document.querySelector("#modalTitle").textContent = `${item.block} ${item.floor} ${item.flat}室`;
+      document.querySelector("#modalBody").innerHTML = `
+        <div class="detail-grid">
+          <div class="detail-box"><span>成交 / 註冊日期</span><strong>${escapeHtml(item.date)}</strong></div>
+          <div class="detail-box"><span>成交價</span><strong>HK$${fmt.format(item.price)}</strong></div>
+          <div class="detail-box"><span>實用面積</span><strong>${fmt.format(item.area)} ft²</strong></div>
+          <div class="detail-box"><span>實用呎價</span><strong>HK$${fmt.format(item.psf)}</strong></div>
+          <div class="detail-box"><span>間隔</span><strong>${escapeHtml(item.rooms)}</strong></div>
+          <div class="detail-box"><span>上次成交 / 升跌</span><strong>${escapeHtml(item.previous)}</strong></div>
+          <div class="detail-box"><span>持貨年期</span><strong>${escapeHtml(item.holding)}</strong></div>
+          <div class="detail-box"><span>Source</span><strong>${escapeHtml(item.source)}</strong></div>
+        </div>
+        <div class="notice">同你單位最相關的是同座北爵軒、相近樓層、相近實用面積及同字母單位。此 snapshot 來自美聯頁面列出的註冊處成交，正式估值前仍建議用土地註冊處/代理核實。</div>
+        <a class="button" href="${escapeHtml(item.url)}" target="_blank" rel="noreferrer">Open original source</a>
+      `;
+      document.querySelector("#txModal").style.display = "grid";
+    }
+    function closeTxModal(event) {
+      if (event && event.target.id !== "txModal") return;
+      document.querySelector("#txModal").style.display = "none";
+    }
     function renderRange(area) {
-      const psfs = state.txs.map((x) => Number(x.psf)).filter(Boolean).sort((a,b) => a-b);
+      const psfs = [...state.txs.map((x) => Number(x.psf)), ...latestTransactions.map((x) => Number(x.psf))].filter(Boolean).sort((a,b) => a-b);
       if (!area || !psfs.length) {
         document.querySelector("#rangeValue").textContent = "Input area";
         return;
@@ -352,6 +456,7 @@
     function renderChart(area) {
       const points = [
         ...state.txs.map((x) => ({ label:x.source, value: area && x.psf ? x.psf * area : x.price })),
+        ...latestTransactions.map((x) => ({ label:`${x.block} ${x.flat}`, value: area ? x.psf * area : x.price })),
         ...state.banks.map((x) => ({ label:x.bank, value:x.value }))
       ].filter((x) => Number(x.value));
       const max = Math.max(...points.map((x) => x.value), 1);
