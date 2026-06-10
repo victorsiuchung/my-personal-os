@@ -1,0 +1,866 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Maison Delta | Luxury Bag Arbitrage System</title>
+  <style>
+    :root {
+      --ink: #171412;
+      --muted: #6d6259;
+      --line: #ddd5cb;
+      --paper: #fbfaf7;
+      --panel: #ffffff;
+      --cream: #f2eee7;
+      --gold: #a77b36;
+      --green: #1f6b4d;
+      --red: #a34238;
+      --charcoal: #23201d;
+      --blue: #284968;
+      --shadow: 0 18px 48px rgba(23, 20, 18, .10);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Inter", "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif;
+      color: var(--ink);
+      background: var(--paper);
+      letter-spacing: 0;
+    }
+
+    button, input, select, textarea { font: inherit; }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 260px 1fr;
+    }
+
+    aside {
+      background: var(--charcoal);
+      color: #f7f0e6;
+      padding: 28px 22px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+    }
+
+    .brand {
+      display: grid;
+      gap: 5px;
+      margin-bottom: 30px;
+    }
+
+    .brand strong {
+      font-size: 22px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-weight: 500;
+    }
+
+    .brand span, .nav small {
+      color: #cbbfad;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .nav {
+      display: grid;
+      gap: 8px;
+    }
+
+    .nav button {
+      width: 100%;
+      border: 1px solid rgba(255,255,255,.12);
+      background: transparent;
+      color: #f8f1e8;
+      padding: 12px 13px;
+      text-align: left;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .nav button.active {
+      background: #f8f1e8;
+      color: var(--charcoal);
+      border-color: #f8f1e8;
+    }
+
+    .side-note {
+      margin-top: 28px;
+      padding-top: 22px;
+      border-top: 1px solid rgba(255,255,255,.14);
+      display: grid;
+      gap: 12px;
+    }
+
+    .metric-mini {
+      display: grid;
+      gap: 3px;
+    }
+
+    .metric-mini b {
+      font-size: 19px;
+      color: #fff;
+    }
+
+    main {
+      min-width: 0;
+      padding: 28px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .topbar h1 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(30px, 4vw, 50px);
+      font-weight: 500;
+      line-height: 1;
+    }
+
+    .topbar p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      max-width: 760px;
+      line-height: 1.6;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--ink);
+      border-radius: 8px;
+      padding: 10px 14px;
+      cursor: pointer;
+      min-height: 42px;
+    }
+
+    .btn.primary {
+      background: var(--ink);
+      color: #fff;
+      border-color: var(--ink);
+    }
+
+    .btn.gold {
+      background: var(--gold);
+      color: #fff;
+      border-color: var(--gold);
+    }
+
+    .section { display: none; }
+    .section.active { display: block; }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .grid.kpis {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin-bottom: 16px;
+    }
+
+    .kpi {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 17px;
+      min-height: 108px;
+    }
+
+    .kpi span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .kpi strong {
+      display: block;
+      margin-top: 8px;
+      font-size: 27px;
+      line-height: 1.1;
+    }
+
+    .kpi small {
+      display: block;
+      margin-top: 8px;
+      color: var(--green);
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(330px, .65fr);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 18px 18px 12px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .panel-head h2 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .panel-head span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .deal-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .deal-table th, .deal-table td {
+      padding: 14px 18px;
+      text-align: left;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+      font-size: 14px;
+    }
+
+    .deal-table th {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      background: #f8f5ef;
+    }
+
+    .deal-table tr:last-child td { border-bottom: 0; }
+
+    .item-title {
+      display: grid;
+      gap: 4px;
+      min-width: 210px;
+    }
+
+    .item-title b { font-size: 15px; }
+    .item-title small, .muted { color: var(--muted); }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 5px 9px;
+      font-size: 12px;
+      white-space: nowrap;
+      border: 1px solid var(--line);
+      background: #faf7f1;
+    }
+
+    .tag.good {
+      color: var(--green);
+      border-color: rgba(31,107,77,.26);
+      background: rgba(31,107,77,.08);
+    }
+
+    .tag.warn {
+      color: #8a5a11;
+      border-color: rgba(167,123,54,.32);
+      background: rgba(167,123,54,.10);
+    }
+
+    .tag.bad {
+      color: var(--red);
+      border-color: rgba(163,66,56,.28);
+      background: rgba(163,66,56,.08);
+    }
+
+    .source-card {
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--line);
+      display: grid;
+      gap: 10px;
+    }
+
+    .source-card:last-child { border-bottom: 0; }
+
+    .source-card h3 {
+      margin: 0;
+      font-size: 16px;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .source-card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.5;
+      font-size: 13px;
+    }
+
+    .pipeline {
+      padding: 18px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 34px 1fr;
+      gap: 10px;
+      align-items: start;
+    }
+
+    .dot {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: var(--cream);
+      color: var(--gold);
+      font-weight: 700;
+    }
+
+    .step b { display: block; margin-bottom: 3px; }
+    .step span { color: var(--muted); font-size: 13px; line-height: 1.5; }
+
+    .storefront {
+      background: #161311;
+      color: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      min-height: 430px;
+      display: grid;
+      grid-template-columns: minmax(0, .9fr) minmax(320px, 1.1fr);
+      background:
+        linear-gradient(90deg, rgba(22,19,17,.95) 0%, rgba(22,19,17,.78) 42%, rgba(22,19,17,.18) 100%),
+        url("https://images.unsplash.com/photo-1590874103328-eac38a683ce7?auto=format&fit=crop&w=1500&q=85") center / cover;
+    }
+
+    .hero-copy {
+      padding: 48px;
+      align-self: center;
+      display: grid;
+      gap: 18px;
+      max-width: 610px;
+    }
+
+    .hero h2 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(42px, 7vw, 78px);
+      line-height: .95;
+      font-weight: 500;
+    }
+
+    .hero p {
+      margin: 0;
+      color: #e4d8c8;
+      line-height: 1.6;
+      font-size: 16px;
+    }
+
+    .product-band {
+      background: #f8f4ed;
+      color: var(--ink);
+      padding: 26px;
+    }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .product {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      display: grid;
+    }
+
+    .product img {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+      display: block;
+      background: #eee;
+    }
+
+    .product-body {
+      padding: 16px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .product h3 {
+      margin: 0;
+      font-size: 17px;
+    }
+
+    .price-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+
+    .price-line strong { font-size: 19px; }
+
+    .order-form {
+      margin-top: 16px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--ink);
+      padding: 20px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    label {
+      display: grid;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 11px 12px;
+      color: var(--ink);
+      background: #fff;
+      min-height: 42px;
+    }
+
+    textarea { resize: vertical; min-height: 84px; }
+
+    .rules {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .rule {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+      display: grid;
+      gap: 10px;
+      min-height: 168px;
+    }
+
+    .rule h3 { margin: 0; font-size: 17px; }
+    .rule p, .rule li { color: var(--muted); line-height: 1.55; font-size: 14px; }
+    .rule ul { margin: 0; padding-left: 18px; }
+
+    .toast {
+      position: fixed;
+      right: 22px;
+      bottom: 22px;
+      background: var(--ink);
+      color: #fff;
+      padding: 13px 16px;
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      transform: translateY(90px);
+      opacity: 0;
+      transition: .22s ease;
+      z-index: 20;
+      max-width: 320px;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    @media (max-width: 1080px) {
+      .app { grid-template-columns: 1fr; }
+      aside {
+        position: static;
+        height: auto;
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+      .nav { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .side-note { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .grid.kpis, .product-grid, .rules { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .workspace, .hero { grid-template-columns: 1fr; }
+      .hero { background-position: center right; }
+      .form-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 720px) {
+      main { padding: 18px; }
+      aside { padding: 20px; }
+      .nav, .side-note, .grid.kpis, .product-grid, .rules, .form-grid { grid-template-columns: 1fr; }
+      .topbar { align-items: flex-start; flex-direction: column; }
+      .actions { justify-content: flex-start; }
+      .deal-table { min-width: 820px; }
+      .table-wrap { overflow-x: auto; }
+      .hero-copy { padding: 34px 24px; }
+      .hero { min-height: 520px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside>
+      <div class="brand">
+        <strong>Maison Delta</strong>
+        <span>香港二手高級手袋差價系統</span>
+      </div>
+      <div class="nav" aria-label="主要頁面">
+        <button class="active" data-target="backend">買手後台</button>
+        <button data-target="frontend">客人前台</button>
+        <button data-target="playbook">營運規則</button>
+      </div>
+      <div class="side-note">
+        <div class="metric-mini">
+          <small>今日候選貨</small>
+          <b>18</b>
+        </div>
+        <div class="metric-mini">
+          <small>可批核毛利</small>
+          <b>HK$96k</b>
+        </div>
+        <div class="metric-mini">
+          <small>最低訂金</small>
+          <b>15%</b>
+        </div>
+      </div>
+    </aside>
+
+    <main>
+      <section id="backend" class="section active">
+        <div class="topbar">
+          <div>
+            <h1>買手後台</h1>
+            <p>系統每日集中掃香港二手平台、名牌二手店同國際參考價，先計出預估轉售價、平台費、驗袋成本、資金佔用，再推介值得買入嘅貨俾你批核。</p>
+          </div>
+          <div class="actions">
+            <button class="btn" id="refreshBtn">刷新候選</button>
+            <button class="btn primary" id="approveTopBtn">批核最高分</button>
+          </div>
+        </div>
+
+        <div class="grid kpis">
+          <div class="kpi"><span>平均目標毛利率</span><strong>24.8%</strong><small>已扣驗袋及平台成本</small></div>
+          <div class="kpi"><span>最快可交收</span><strong>2 小時</strong><small>Carousell 本地面交</small></div>
+          <div class="kpi"><span>高風險貨源</span><strong>4 件</strong><small style="color: var(--red)">缺收據 / 價格異常</small></div>
+          <div class="kpi"><span>建議凍結資金</span><strong>HK$420k</strong><small>先等客人落訂</small></div>
+        </div>
+
+        <div class="workspace">
+          <div class="panel">
+            <div class="panel-head">
+              <div>
+                <h2>今日買入候選</h2>
+                <span>示範數據：正式版會連接爬蟲 / API / 人手輸入價源</span>
+              </div>
+              <span class="tag good">按 ROI 排序</span>
+            </div>
+            <div class="table-wrap">
+              <table class="deal-table">
+                <thead>
+                  <tr>
+                    <th>貨品</th>
+                    <th>來源</th>
+                    <th>買入價</th>
+                    <th>建議賣價</th>
+                    <th>預估毛利</th>
+                    <th>風險</th>
+                    <th>動作</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><div class="item-title"><b>Hermes Kelly 28 Gold Epsom GHW</b><small>Box / dust bag / 2021 Z stamp</small></div></td>
+                    <td>Carousell HK</td>
+                    <td>HK$118,000</td>
+                    <td>HK$148,000</td>
+                    <td><span class="tag good">+HK$23,200</span></td>
+                    <td><span class="tag warn">要驗袋</span></td>
+                    <td><button class="btn gold deal-action">批核</button></td>
+                  </tr>
+                  <tr>
+                    <td><div class="item-title"><b>Hermes Birkin 30 Noir Togo PHW</b><small>Full set / light corner wear</small></div></td>
+                    <td>米蘭站 / 店舖報價</td>
+                    <td>HK$142,000</td>
+                    <td>HK$168,000</td>
+                    <td><span class="tag good">+HK$19,400</span></td>
+                    <td><span class="tag good">店舖貨</span></td>
+                    <td><button class="btn deal-action">加入前台</button></td>
+                  </tr>
+                  <tr>
+                    <td><div class="item-title"><b>Hermes Constance 18 Etoupe Epsom</b><small>Receipt photo only / seller rating 5.0</small></div></td>
+                    <td>Carousell HK</td>
+                    <td>HK$82,000</td>
+                    <td>HK$105,000</td>
+                    <td><span class="tag good">+HK$17,700</span></td>
+                    <td><span class="tag warn">先收訂</span></td>
+                    <td><button class="btn deal-action">批核</button></td>
+                  </tr>
+                  <tr>
+                    <td><div class="item-title"><b>Chanel Classic Flap Medium Black</b><small>Series 31 / lambskin</small></div></td>
+                    <td>Brand Off HK</td>
+                    <td>HK$49,500</td>
+                    <td>HK$60,800</td>
+                    <td><span class="tag warn">+HK$7,600</span></td>
+                    <td><span class="tag good">低風險</span></td>
+                    <td><button class="btn deal-action">觀察</button></td>
+                  </tr>
+                  <tr>
+                    <td><div class="item-title"><b>Hermes Lindy 26 Beton Clemence</b><small>No invoice / price below range</small></div></td>
+                    <td>社群賣家</td>
+                    <td>HK$51,000</td>
+                    <td>HK$73,000</td>
+                    <td><span class="tag good">+HK$16,300</span></td>
+                    <td><span class="tag bad">暫停</span></td>
+                    <td><button class="btn deal-action">要補資料</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <div>
+                <h2>推薦價源</h2>
+                <span>香港優先，國際平台作參考</span>
+              </div>
+            </div>
+            <div class="source-card">
+              <h3>Carousell HK <span class="tag good">買入</span></h3>
+              <p>C2C 供應多，容易搵急放盤。要用賣家評分、面交驗袋、收據完整度做風險分。</p>
+            </div>
+            <div class="source-card">
+              <h3>米蘭站 / Brand Off <span class="tag warn">參考 + 補貨</span></h3>
+              <p>適合做本地零售價參考同較低風險貨源，但入貨價通常較硬，差價未必最大。</p>
+            </div>
+            <div class="source-card">
+              <h3>Vestiaire / eBay Sold <span class="tag">市價</span></h3>
+              <p>用成交或上架價校準全球市場，特別係稀有色、尺寸同年份。正式版應分開香港可交收價同海外可比價。</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="frontend" class="section">
+        <div class="topbar">
+          <div>
+            <h1>客人前台</h1>
+            <p>前台唔講「差價」，只呈現精品買手、已篩選、可預留、可安排驗證同交收。買家落訂後，你先去鎖定貨源，降低存貨風險。</p>
+          </div>
+          <div class="actions">
+            <button class="btn">預覽手機版</button>
+            <button class="btn primary">發佈新貨</button>
+          </div>
+        </div>
+
+        <div class="storefront">
+          <div class="hero">
+            <div class="hero-copy">
+              <span class="tag">Curated in Hong Kong</span>
+              <h2>Reserved Luxury, Sourced Quietly.</h2>
+              <p>嚴選 Hermes、Chanel 及稀有皮具現貨 / 預留貨源。每件手袋先經買手審核，可安排第三方驗證及香港交收。</p>
+              <div class="actions" style="justify-content:flex-start">
+                <button class="btn gold">預留心儀手袋</button>
+                <button class="btn" style="background:rgba(255,255,255,.08);color:#fff;border-color:rgba(255,255,255,.28)">WhatsApp 查詢</button>
+              </div>
+            </div>
+          </div>
+          <div class="product-band">
+            <div class="product-grid">
+              <article class="product">
+                <img alt="Gold luxury leather handbag" src="https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=900&q=85" />
+                <div class="product-body">
+                  <h3>Kelly 28 Gold Epsom</h3>
+                  <span class="muted">Full set · Excellent · 2021</span>
+                  <div class="price-line"><strong>HK$148,000</strong><span class="tag good">可預留</span></div>
+                  <button class="btn primary order-btn">落訂 HK$22,200</button>
+                </div>
+              </article>
+              <article class="product">
+                <img alt="Black luxury handbag detail" src="https://images.unsplash.com/photo-1594223274512-ad4803739b7c?auto=format&fit=crop&w=900&q=85" />
+                <div class="product-body">
+                  <h3>Birkin 30 Noir Togo</h3>
+                  <span class="muted">Full set · Very good · PHW</span>
+                  <div class="price-line"><strong>HK$168,000</strong><span class="tag warn">待確認</span></div>
+                  <button class="btn primary order-btn">落訂 HK$25,200</button>
+                </div>
+              </article>
+              <article class="product">
+                <img alt="Neutral designer handbag on chair" src="https://images.unsplash.com/photo-1575032617751-6ddec2089882?auto=format&fit=crop&w=900&q=85" />
+                <div class="product-body">
+                  <h3>Constance 18 Etoupe</h3>
+                  <span class="muted">Epsom · Compact · Seller verified</span>
+                  <div class="price-line"><strong>HK$105,000</strong><span class="tag good">可預留</span></div>
+                  <button class="btn primary order-btn">落訂 HK$15,750</button>
+                </div>
+              </article>
+            </div>
+
+            <form class="order-form" id="orderForm">
+              <div>
+                <h2 style="margin:0 0 6px;font-size:20px">預留 / 落訂</h2>
+                <span class="muted">客人提交後，後台會生成「已收訂 → 鎖貨 → 驗證 → 交收」流程。</span>
+              </div>
+              <div class="form-grid">
+                <label>手袋<select required><option>Kelly 28 Gold Epsom</option><option>Birkin 30 Noir Togo</option><option>Constance 18 Etoupe</option></select></label>
+                <label>姓名<input required placeholder="例如 Chan Tai Man" /></label>
+                <label>電話 / WhatsApp<input required placeholder="+852 9123 4567" /></label>
+                <label>交收方式<select><option>中環貴賓室</option><option>尖沙咀驗袋中心附近</option><option>專人送貨</option></select></label>
+              </div>
+              <textarea placeholder="想要補相、驗證要求、付款方式備註"></textarea>
+              <div class="actions" style="justify-content:flex-start">
+                <button class="btn gold" type="submit">提交預留</button>
+                <span class="muted">示範：訂金 15%，餘款交收前確認。</span>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <section id="playbook" class="section">
+        <div class="topbar">
+          <div>
+            <h1>營運規則</h1>
+            <p>呢套系統嘅重點唔係盲目搵平貨，而係控制真偽、交收、資金同聲譽風險。貴價手袋買賣最怕一件假貨或一單甩貨食晒利潤。</p>
+          </div>
+        </div>
+
+        <div class="rules">
+          <div class="rule">
+            <h3>1. 買入評分</h3>
+            <ul>
+              <li>價差至少 18% 或 HK$12,000 以上先入候選。</li>
+              <li>Hermes 需記錄皮革、尺寸、年份刻、配件完整度。</li>
+              <li>低過市場 25% 以上自動標紅，需要二次驗證。</li>
+            </ul>
+          </div>
+          <div class="rule">
+            <h3>2. 驗證流程</h3>
+            <ul>
+              <li>Carousell / 私人賣家：只做面交，先驗袋後付款。</li>
+              <li>高價 Hermes：收據、盒、塵袋、刻印、五金、線步全部留相。</li>
+              <li>必要時用第三方驗證，成本直接扣入 ROI。</li>
+            </ul>
+          </div>
+          <div class="rule">
+            <h3>3. 落訂後鎖貨</h3>
+            <ul>
+              <li>前台顯示「可預留」而非保證現貨。</li>
+              <li>客人落 15% 訂金後，買手 2 小時內鎖定來源。</li>
+              <li>若貨源失效，退款或轉同級貨，保護信任。</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top:16px">
+          <div class="panel-head">
+            <div>
+              <h2>建議 Backend 架構</h2>
+              <span>可由人手輸入開始，再逐步自動化</span>
+            </div>
+          </div>
+          <div class="pipeline">
+            <div class="step"><div class="dot">1</div><div><b>收集價源</b><span>Carousell 搜尋結果、店舖報價、Vestiaire/eBay 參考價、內部成交價。</span></div></div>
+            <div class="step"><div class="dot">2</div><div><b>標準化貨品</b><span>品牌、型號、尺寸、皮革、顏色、年份、配件、狀態，用同一套欄位比較。</span></div></div>
+            <div class="step"><div class="dot">3</div><div><b>計算 ROI</b><span>建議賣價 - 買入價 - 驗袋費 - 付款費 - 物流 - 平台/廣告成本 - 安全折讓。</span></div></div>
+            <div class="step"><div class="dot">4</div><div><b>人工批核</b><span>你 approve 後先 publish 去前台；高風險貨只可「收訂後代尋」。</span></div></div>
+            <div class="step"><div class="dot">5</div><div><b>訂單執行</b><span>收到訂金、自動通知買手鎖貨、記錄驗證、安排交收、完成毛利報表。</span></div></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast" id="toast">已更新</div>
+
+  <script>
+    const tabs = document.querySelectorAll(".nav button");
+    const sections = document.querySelectorAll(".section");
+    const toast = document.getElementById("toast");
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add("show");
+      window.setTimeout(() => toast.classList.remove("show"), 2200);
+    }
+
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        tabs.forEach((item) => item.classList.remove("active"));
+        sections.forEach((section) => section.classList.remove("active"));
+        tab.classList.add("active");
+        document.getElementById(tab.dataset.target).classList.add("active");
+      });
+    });
+
+    document.getElementById("refreshBtn").addEventListener("click", () => {
+      showToast("已刷新候選貨源：新增 3 件，2 件因風險太高已隱藏。");
+    });
+
+    document.getElementById("approveTopBtn").addEventListener("click", () => {
+      showToast("Kelly 28 已批核並加入前台預留列表。");
+    });
+
+    document.querySelectorAll(".deal-action").forEach((button) => {
+      button.addEventListener("click", () => showToast("已記錄動作，正式版會同步到商品及訂單狀態。"));
+    });
+
+    document.querySelectorAll(".order-btn").forEach((button) => {
+      button.addEventListener("click", () => {
+        document.getElementById("frontend").scrollIntoView({ behavior: "smooth", block: "end" });
+      });
+    });
+
+    document.getElementById("orderForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      showToast("預留已提交：後台會建立訂單並通知買手鎖貨。");
+    });
+  </script>
+</body>
+</html>
