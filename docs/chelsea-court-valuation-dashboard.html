@@ -199,7 +199,7 @@
         </table>
 
         <h2 style="border:0;padding:24px 0 12px">Latest Transactions / Registry Records</h2>
-        <div class="notice">以下為美聯爵悅庭頁面可讀到的最新 2026 成交 / 註冊處成交 snapshot；按每張卡可睇詳情及開原始來源。中原有 Latest Trans. / Register of Transactions 入口，但交易列表需在中原頁面互動展開，所以 dashboard 會保留中原入口作覆核。</div>
+        <div class="notice">以下為已匯入 snapshot。要睇最新至尋日的成交，請用右邊 Live Transaction Search 直接開中原/美聯成交搜尋，再搜「爵悅庭」「Chelsea Court」「北爵軒」。中原的土地註冊 record 用作硬數據；美聯/代理標示「成交」的通常較新，但未必已完成註冊。</div>
         <div id="latestTransactions" class="tx-cards"></div>
 
         <h2 style="border:0;padding:24px 0 12px">Valuation Chart</h2>
@@ -211,6 +211,19 @@
       <section class="panel">
         <h2>Open Data Sources</h2>
         <div class="panel-body source-list">
+          <div class="source-card">
+            <h3>Live Transaction Search</h3>
+            <p>每日查最新成交：開中原 / 美聯成交搜尋，再輸入「爵悅庭」「Chelsea Court」「北爵軒」。</p>
+            <div class="bank-buttons" style="margin-top:10px">
+              <a class="button" href="https://hk.centanet.com/findproperty/list/transaction" target="_blank" rel="noreferrer">中原成交搜尋</a>
+              <a class="button" href="https://www.midland.com.hk/zh-hk/list/transaction" target="_blank" rel="noreferrer">美聯成交搜尋</a>
+            </div>
+            <div class="toolbar" style="margin:10px 0 0">
+              <button class="button secondary" onclick="copySearchTerm('爵悅庭')">Copy 爵悅庭</button>
+              <button class="button secondary" onclick="copySearchTerm('Chelsea Court')">Copy Chelsea Court</button>
+              <button class="button secondary" onclick="copySearchTerm('北爵軒')">Copy 北爵軒</button>
+            </div>
+          </div>
           <div class="source-card">
             <h3>Centaline 中原</h3>
             <p>屋苑資料、CentaEstimate、成交紀錄、放盤呎價。</p>
@@ -296,7 +309,9 @@
     const storeKey = "chelsea-court-watch-v1";
     const sourceUrls = {
       midlandEstate: "https://www.midland.com.hk/zh-hk/estate/%E6%96%B0%E7%95%8C-%E8%8D%83%E7%81%A3%E8%A5%BF-%E7%88%B5%E6%82%85%E5%BA%AD-E000002042",
-      centalineEstate: "https://hk.centanet.com/estate/en/Chelsea-Court/2-AEPPWPPRPK"
+      centalineEstate: "https://hk.centanet.com/estate/en/Chelsea-Court/2-AEPPWPPRPK",
+      centalineTransactions: "https://hk.centanet.com/findproperty/list/transaction",
+      midlandTransactions: "https://www.midland.com.hk/zh-hk/list/transaction"
     };
     const latestTransactions = [
       { date:"26/04/2026", block:"東爵軒 (A1)", floor:"55/F", flat:"C", rooms:"1房2廳", price:7370000, area:479, psf:15382, previous:"HK$709萬 / +4%", holding:"6.6年", recordType:"註冊處成交", source:"Midland / Land Registry", url:sourceUrls.midlandEstate },
@@ -436,7 +451,7 @@
           <div class="detail-box"><span>持貨年期</span><strong>${escapeHtml(item.holding)}</strong></div>
           <div class="detail-box"><span>Source</span><strong>${escapeHtml(item.source)}</strong></div>
         </div>
-        <div class="notice">同你單位最相關的是同座北爵軒、相近樓層、相近實用面積及同字母單位。中原註冊 record 可作硬數據覆核；代理頁標示「成交」但未註冊的資料，應視為較新但仍需確認。</div>
+        <div class="notice">同你單位最相關的是同座北爵軒、相近樓層、相近實用面積及同字母單位。中原的土地註冊 record 可作硬數據覆核；中原/美聯標示「成交」但未註冊的資料，通常較新，可作即時市場參考。</div>
         <a class="button" href="${escapeHtml(item.url)}" target="_blank" rel="noreferrer">Open original source</a>
       `;
       document.querySelector("#txModal").style.display = "grid";
@@ -444,6 +459,14 @@
     function closeTxModal(event) {
       if (event && event.target.id !== "txModal") return;
       document.querySelector("#txModal").style.display = "none";
+    }
+    async function copySearchTerm(term) {
+      try {
+        await navigator.clipboard.writeText(term);
+        alert(`已複製：${term}`);
+      } catch {
+        prompt("Copy search term", term);
+      }
     }
     function renderRange(area) {
       const psfs = [...state.txs.map((x) => Number(x.psf)), ...latestTransactions.map((x) => Number(x.psf))].filter(Boolean).sort((a,b) => a-b);
