@@ -82,8 +82,13 @@
     .detail-grid { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:10px; }
     .detail-box { border:1px solid var(--line); border-radius:8px; padding:11px; }
     .detail-box span { display:block; color:var(--muted); font-size:12px; margin-bottom:4px; }
+    .avg-grid { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:10px; margin-top:12px; }
+    .avg-box { border:1px solid var(--line); border-radius:8px; background:#fff; padding:13px; }
+    .avg-box span { color:var(--muted); font-size:12px; }
+    .avg-box b { display:block; margin-top:6px; font-size:22px; }
+    .avg-box small { display:block; margin-top:4px; color:var(--muted); }
     @media (max-width: 1050px) { header, main { grid-template-columns:1fr; } .sidebar { position:static; } .grid { grid-template-columns:1fr; } }
-    @media (max-width: 760px) { .form-grid, .tx-cards, .detail-grid { grid-template-columns:1fr; } .bank-buttons { grid-template-columns:1fr; } .hero { padding:22px; } }
+    @media (max-width: 760px) { .form-grid, .tx-cards, .detail-grid, .avg-grid { grid-template-columns:1fr; } .bank-buttons { grid-template-columns:1fr; } .hero { padding:22px; } }
   </style>
 </head>
 <body>
@@ -200,6 +205,11 @@
 
         <h2 style="border:0;padding:24px 0 12px">Latest Transactions / Registry Records</h2>
         <div class="notice">以下為已匯入 snapshot。要睇最新至尋日的成交，請用右邊 Live Transaction Search 直接開中原/美聯成交搜尋，再搜「爵悅庭」「Chelsea Court」「北爵軒」。中原的土地註冊 record 用作硬數據；美聯/代理標示「成交」的通常較新，但未必已完成註冊。</div>
+        <div class="avg-grid">
+          <div class="avg-box"><span>最近 7 日平均呎價</span><b id="avg7">--</b><small id="avg7Count">--</small></div>
+          <div class="avg-box"><span>最近 14 日平均呎價</span><b id="avg14">--</b><small id="avg14Count">--</small></div>
+          <div class="avg-box"><span>最近 30 日平均呎價</span><b id="avg30">--</b><small id="avg30Count">--</small></div>
+        </div>
         <div id="latestTransactions" class="tx-cards"></div>
 
         <h2 style="border:0;padding:24px 0 12px">Valuation Chart</h2>
@@ -321,16 +331,17 @@
       centalineReader: "https://r.jina.ai/http://r.jina.ai/http://https://hk.centanet.com/estate/en/Chelsea-Court/2-AEPPWPPRPK"
     };
     const latestTransactions = [
-      { date:"26/04/2026", block:"東爵軒 (A1)", floor:"55/F", flat:"C", rooms:"1房2廳", price:7370000, area:479, psf:15382, previous:"HK$709萬 / +4%", holding:"6.6年", recordType:"註冊處成交", source:"Midland / Land Registry", url:sourceUrls.midlandEstate },
-      { date:"23/04/2026", block:"北爵軒 (B2)", floor:"21/F", flat:"C", rooms:"3房2廳", price:9800000, area:722, psf:13573, previous:"HK$404萬 / +142%", holding:"21.4年", recordType:"註冊處成交", source:"Midland / Land Registry", url:sourceUrls.midlandEstate },
-      { date:"21/04/2026", block:"西爵軒 (B1)", floor:"66/F", flat:"G", rooms:"1房2廳", price:9900000, area:598, psf:16555, previous:"HK$1,038萬 / -5%", holding:"2.8年", recordType:"註冊處成交", source:"Midland / Land Registry", url:sourceUrls.midlandEstate },
-      { date:"16/04/2026", block:"北爵軒 (B2)", floor:"30/F", flat:"E", rooms:"1房2廳", price:6980000, area:450, psf:15511, previous:"HK$305萬 / +129%", holding:"15.6年", recordType:"註冊處成交", source:"Midland / Land Registry", url:sourceUrls.midlandEstate },
-      { date:"07/04/2026", block:"西爵軒 (B1)", floor:"51/F", flat:"F", rooms:"1房2廳", price:7480000, area:452, psf:16549, previous:"HK$730萬 / +3%", holding:"8.1年", recordType:"註冊處成交", source:"Midland / Land Registry", url:sourceUrls.midlandEstate },
-      { date:"01/04/2026", block:"南爵軒 (A2)", floor:"23/F", flat:"C", rooms:"1房2廳", price:6780000, area:464, psf:14612, previous:"HK$278萬 / +144%", holding:"15.6年", recordType:"註冊處成交", source:"Midland / Land Registry", url:sourceUrls.midlandEstate },
-      { date:"26/03/2026", block:"西爵軒 (B1)", floor:"65/F", flat:"D", rooms:"1房2廳", price:8300000, area:521, psf:15931, previous:"HK$567萬 / +46%", holding:"13.0年", recordType:"註冊處成交", source:"Midland / Land Registry", url:sourceUrls.midlandEstate },
-      { date:"24/03/2026", block:"東爵軒 (A1)", floor:"26/F", flat:"E", rooms:"1房1廳", price:5400000, area:372, psf:14516, previous:"HK$444萬 / +22%", holding:"9.5年", recordType:"註冊處成交", source:"Midland / Land Registry", url:sourceUrls.midlandEstate },
-      { date:"18/03/2026", block:"東爵軒 (A1)", floor:"33/F", flat:"F", rooms:"1房2廳", price:6300000, area:475, psf:13263, previous:"HK$461萬 / +37%", holding:"12.3年", recordType:"註冊處成交", source:"Midland / Land Registry", url:sourceUrls.midlandEstate },
-      { date:"18/03/2026", block:"東爵軒 (A1)", floor:"28/F", flat:"B", rooms:"3房2廳", price:8000000, area:640, psf:12500, previous:"HK$386萬 / +107%", holding:"20.8年", recordType:"註冊處成交", source:"Midland / Land Registry", url:sourceUrls.midlandEstate }
+      { date:"2026-06-09", block:"南爵軒 (A2)", floor:"中層", flat:"E", rooms:"--", price:5480000, area:372, psf:14731, previous:"--", holding:"--", recordType:"成交", source:"Centaline filtered search", url:"https://hk.centanet.com/findproperty/transaction-detail/爵悅庭_LYB202605S1272", preferredForAverage:true },
+      { date:"2026-05-28", block:"西爵軒 (B1)", floor:"61/F", flat:"G", rooms:"--", price:9500000, area:559, psf:16995, previous:"--", holding:"--", recordType:"成交", source:"Centaline filtered search", url:"https://hk.centanet.com/findproperty/transaction-detail/爵悅庭_26060501920045", preferredForAverage:true },
+      { date:"2026-04-15", block:"東爵軒 (A1)", floor:"中層", flat:"E", rooms:"--", price:7368000, area:479, psf:15382, previous:"--", holding:"--", recordType:"成交", source:"Centaline filtered search", url:"https://hk.centanet.com/findproperty/transaction-detail/爵悅庭_26042701730315", preferredForAverage:true },
+      { date:"2026-04-10", block:"西爵軒 (B1)", floor:"31/F", flat:"D", rooms:"--", price:8238000, area:519, psf:15873, previous:"--", holding:"--", recordType:"成交", source:"Centaline filtered search", url:"https://hk.centanet.com/findproperty/transaction-detail/爵悅庭_26050801050159", preferredForAverage:true },
+      { date:"2026-03-24", block:"北爵軒 (B2)", floor:"21/F", flat:"C", rooms:"--", price:9800000, area:722, psf:13573, previous:"--", holding:"--", recordType:"成交", source:"Centaline filtered search", url:"https://hk.centanet.com/findproperty/transaction-detail/爵悅庭_26042201540012", preferredForAverage:true },
+      { date:"2026-03-23", block:"北爵軒 (B2)", floor:"30/F", flat:"E", rooms:"--", price:6980000, area:450, psf:15511, previous:"--", holding:"--", recordType:"成交", source:"Centaline filtered search", url:"https://hk.centanet.com/findproperty/transaction-detail/爵悅庭_26041700350057", preferredForAverage:true },
+      { date:"2026-04-26", block:"東爵軒 (A1)", floor:"55/F", flat:"C", rooms:"1房2廳", price:7370000, area:479, psf:15382, previous:"HK$709萬 / +4%", holding:"6.6年", recordType:"註冊處成交", source:"Midland estate snapshot", url:sourceUrls.midlandEstate },
+      { date:"2026-04-23", block:"北爵軒 (B2)", floor:"21/F", flat:"C", rooms:"3房2廳", price:9800000, area:722, psf:13573, previous:"HK$404萬 / +142%", holding:"21.4年", recordType:"註冊處成交", source:"Midland estate snapshot", url:sourceUrls.midlandEstate },
+      { date:"2026-04-21", block:"西爵軒 (B1)", floor:"66/F", flat:"G", rooms:"1房2廳", price:9900000, area:598, psf:16555, previous:"HK$1,038萬 / -5%", holding:"2.8年", recordType:"註冊處成交", source:"Midland estate snapshot", url:sourceUrls.midlandEstate },
+      { date:"2026-04-16", block:"北爵軒 (B2)", floor:"30/F", flat:"E", rooms:"1房2廳", price:6980000, area:450, psf:15511, previous:"HK$305萬 / +129%", holding:"15.6年", recordType:"註冊處成交", source:"Midland estate snapshot", url:sourceUrls.midlandEstate },
+      { date:"2026-04-07", block:"西爵軒 (B1)", floor:"51/F", flat:"F", rooms:"1房2廳", price:7480000, area:452, psf:16549, previous:"HK$730萬 / +3%", holding:"8.1年", recordType:"註冊處成交", source:"Midland estate snapshot", url:sourceUrls.midlandEstate }
     ];
     const defaults = {
       area: "",
@@ -402,6 +413,7 @@
       renderBankRows(area);
       renderTxRows();
       renderLatestTransactions();
+      renderAveragePsf();
       renderCentalineSnapshot();
       renderRange(area);
       renderChart(area);
@@ -485,6 +497,25 @@
           <p class="footer-note">${escapeHtml(item.rooms)} · ${escapeHtml(item.source)}</p>
         </article>
       `).join("");
+    }
+    function renderAveragePsf() {
+      const base = latestTransactions
+        .filter((item) => item.preferredForAverage && item.price >= 1000000 && item.psf > 1000)
+        .map((item) => ({ ...item, parsedDate: new Date(`${item.date}T00:00:00+08:00`) }));
+      const latestDate = base.reduce((max, item) => item.parsedDate > max ? item.parsedDate : max, new Date("1970-01-01T00:00:00+08:00"));
+      const latestDateLabel = base.find((item) => item.parsedDate.getTime() === latestDate.getTime())?.date || "";
+      [
+        { days: 7, valueId: "#avg7", countId: "#avg7Count" },
+        { days: 14, valueId: "#avg14", countId: "#avg14Count" },
+        { days: 30, valueId: "#avg30", countId: "#avg30Count" }
+      ].forEach((bucket) => {
+        const cutoff = new Date(latestDate);
+        cutoff.setDate(cutoff.getDate() - bucket.days + 1);
+        const rows = base.filter((item) => item.parsedDate >= cutoff && item.parsedDate <= latestDate);
+        const avg = rows.length ? Math.round(rows.reduce((sum, item) => sum + item.psf, 0) / rows.length) : 0;
+        document.querySelector(bucket.valueId).textContent = avg ? `HK$${fmt.format(avg)}` : "--";
+        document.querySelector(bucket.countId).textContent = rows.length ? `${rows.length} 宗 · 以中原最新成交計至 ${latestDateLabel}` : "未有買賣成交";
+      });
     }
     function openTxModal(index) {
       const item = latestTransactions[index];
