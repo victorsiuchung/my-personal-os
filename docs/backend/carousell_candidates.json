@@ -1,0 +1,30 @@
+[
+  {
+    "source": "Carousell HK",
+    "query": "Hermes Kelly 28",
+    "title": "Hermes Kelly 28 Gold Epsom GHW",
+    "price_hkd": 118000,
+    "listing_url": "https://www.carousell.com.hk/search/Hermes%20Kelly%2028%20Gold%20Epsom",
+    "seller_contact_url": "https://www.carousell.com.hk/search/Hermes%20Kelly%2028%20Gold%20Epsom",
+    "location": "Hong Kong",
+    "condition": "Excellent",
+    "notes": "Demo row: replace with exact listing URL after opening Carousell",
+    "snapshot_time": "2026-06-10T03:28:32.025006+00:00",
+    "risk_flag": "review",
+    "publish_status": "needs_approval"
+  },
+  {
+    "source": "Carousell HK",
+    "query": "Hermes Constance 18",
+    "title": "Hermes Constance 18 Etoupe Epsom",
+    "price_hkd": 82000,
+    "listing_url": "https://www.carousell.com.hk/search/Hermes%20Constance%2018%20Etoupe",
+    "seller_contact_url": "https://www.carousell.com.hk/search/Hermes%20Constance%2018%20Etoupe",
+    "location": "Hong Kong",
+    "condition": "Very good",
+    "notes": "Demo row: replace with exact seller listing URL",
+    "snapshot_time": "2026-06-10T03:28:32.025006+00:00",
+    "risk_flag": "review",
+    "publish_status": "needs_approval"
+  }
+]
