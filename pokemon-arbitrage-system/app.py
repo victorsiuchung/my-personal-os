@@ -32,6 +32,7 @@ class OpportunityCreate(BaseModel):
     card_name: str
     set_name: str = ""
     condition_note: str = ""
+    image_url: str = ""
     source_name: str
     source_url: str
     asking_price_hkd: float = Field(ge=0)
@@ -92,17 +93,18 @@ def create_opportunity(payload: OpportunityCreate) -> dict[str, Any]:
         cursor = conn.execute(
             """
             INSERT INTO opportunities (
-                title, card_name, set_name, condition_note, source_name, source_url,
+                title, card_name, set_name, condition_note, image_url, source_name, source_url,
                 asking_price_hkd, target_resale_hkd, estimated_profit_hkd,
                 estimated_margin_pct, confidence, risk_note
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 payload.title,
                 payload.card_name,
                 payload.set_name,
                 payload.condition_note,
+                payload.image_url,
                 payload.source_name,
                 payload.source_url,
                 payload.asking_price_hkd,
@@ -125,6 +127,7 @@ def seed_demo_opportunities() -> dict[str, Any]:
             card_name="Charizard VSTAR SAR",
             set_name="VSTAR Universe",
             condition_note="PSA 10 slab. Verify cert and slab condition.",
+            image_url="https://images.pokemontcg.io/swsh12pt5/GG56_hires.png",
             source_name="Carousell HK",
             source_url="https://www.carousell.com.hk/search/Charizard%20VSTAR%20PSA%2010",
             asking_price_hkd=720,
@@ -137,6 +140,7 @@ def seed_demo_opportunities() -> dict[str, Any]:
             card_name="Pokemon 151 Booster Box",
             set_name="Pokemon 151",
             condition_note="Sealed box. Avoid no-shrink or suspicious reseal.",
+            image_url="https://images.pokemontcg.io/sv3pt5/199_hires.png",
             source_name="Carousell HK",
             source_url="https://www.carousell.com.hk/search/pokemon%20151%20booster%20box",
             asking_price_hkd=980,
@@ -236,4 +240,3 @@ def seed_sources() -> None:
 
 if __name__ == "__main__":
     uvicorn.run("app:app", host="127.0.0.1", port=8787, reload=False)
-
