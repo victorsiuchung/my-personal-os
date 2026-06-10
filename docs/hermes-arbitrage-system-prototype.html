@@ -312,6 +312,31 @@
       text-decoration: none;
     }
 
+    .link-stack {
+      display: grid;
+      gap: 7px;
+      min-width: 135px;
+    }
+
+    .link-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--blue);
+      border-radius: 8px;
+      padding: 8px 10px;
+      text-decoration: none;
+      font-size: 13px;
+      line-height: 1.2;
+    }
+
+    .link-stack small {
+      color: var(--muted);
+      line-height: 1.35;
+    }
+
     .tag {
       display: inline-flex;
       align-items: center;
@@ -669,6 +694,7 @@
                     <th>建議賣價</th>
                     <th>預估毛利</th>
                     <th>風險</th>
+                    <th>原盤 / 聯絡</th>
                     <th>動作</th>
                   </tr>
                 </thead>
@@ -680,6 +706,7 @@
                     <td>HK$148,000</td>
                     <td><span class="tag good">+HK$23,200</span></td>
                     <td><span class="tag warn">要驗袋</span></td>
+                    <td><div class="link-stack"><a class="link-btn" href="https://www.carousell.com.hk/search/Hermes%20Kelly%2028%20Gold%20Epsom" target="_blank" rel="noreferrer">開 Carousell</a><small>Demo search；正式版改為賣家 listing URL</small></div></td>
                     <td><button class="btn gold deal-action">批核</button></td>
                   </tr>
                   <tr>
@@ -689,6 +716,7 @@
                     <td>HK$168,000</td>
                     <td><span class="tag good">+HK$19,400</span></td>
                     <td><span class="tag good">店舖貨</span></td>
+                    <td><div class="link-stack"><a class="link-btn" href="https://www.milanstation.com.hk/" target="_blank" rel="noreferrer">開米蘭站</a><small>店舖貨源；正式版存報價單/商品頁</small></div></td>
                     <td><button class="btn deal-action">加入前台</button></td>
                   </tr>
                   <tr>
@@ -698,6 +726,7 @@
                     <td>HK$105,000</td>
                     <td><span class="tag good">+HK$17,700</span></td>
                     <td><span class="tag warn">先收訂</span></td>
+                    <td><div class="link-stack"><a class="link-btn" href="https://www.carousell.com.hk/search/Hermes%20Constance%2018%20Etoupe" target="_blank" rel="noreferrer">開 Carousell</a><small>Demo search；落訂後立即聯絡賣家鎖貨</small></div></td>
                     <td><button class="btn deal-action">批核</button></td>
                   </tr>
                   <tr>
@@ -707,6 +736,7 @@
                     <td>HK$60,800</td>
                     <td><span class="tag warn">+HK$7,600</span></td>
                     <td><span class="tag good">低風險</span></td>
+                    <td><div class="link-stack"><a class="link-btn" href="https://www.brand-off.com.hk/" target="_blank" rel="noreferrer">開 Brand Off</a><small>店舖參考；正式版連商品詳情頁</small></div></td>
                     <td><button class="btn deal-action">觀察</button></td>
                   </tr>
                   <tr>
@@ -716,6 +746,7 @@
                     <td>HK$73,000</td>
                     <td><span class="tag good">+HK$16,300</span></td>
                     <td><span class="tag bad">暫停</span></td>
+                    <td><div class="link-stack"><a class="link-btn" href="https://www.carousell.com.hk/search/Hermes%20Lindy%2026%20Beton" target="_blank" rel="noreferrer">開搜尋</a><small>缺收據，不建議未驗證前聯絡付款</small></div></td>
                     <td><button class="btn deal-action">要補資料</button></td>
                   </tr>
                 </tbody>
@@ -879,10 +910,11 @@
           </div>
           <div class="pipeline">
             <div class="step"><div class="dot">1</div><div><b>收集價源</b><span>Carousell 搜尋結果、店舖報價、Vestiaire/eBay 參考價、內部成交價。</span></div></div>
-            <div class="step"><div class="dot">2</div><div><b>標準化貨品</b><span>品牌、型號、尺寸、皮革、顏色、年份、配件、狀態，用同一套欄位比較。</span></div></div>
-            <div class="step"><div class="dot">3</div><div><b>計算 ROI</b><span>建議賣價 - 買入價 - 驗袋費 - 付款費 - 物流 - 平台/廣告成本 - 安全折讓。</span></div></div>
-            <div class="step"><div class="dot">4</div><div><b>人工批核</b><span>你 approve 後先 publish 去前台；高風險貨只可「收訂後代尋」。</span></div></div>
-            <div class="step"><div class="dot">5</div><div><b>訂單執行</b><span>收到訂金、自動通知買手鎖貨、記錄驗證、安排交收、完成毛利報表。</span></div></div>
+            <div class="step"><div class="dot">2</div><div><b>保留原盤連結</b><span>每件貨必須儲存 listing_url、seller_contact_url、source_snapshot_time，買手 approve 後可即刻聯絡賣家鎖貨。</span></div></div>
+            <div class="step"><div class="dot">3</div><div><b>標準化貨品</b><span>品牌、型號、尺寸、皮革、顏色、年份、配件、狀態，用同一套欄位比較。</span></div></div>
+            <div class="step"><div class="dot">4</div><div><b>計算 ROI</b><span>建議賣價 - 買入價 - 驗袋費 - 付款費 - 物流 - 平台/廣告成本 - 安全折讓。</span></div></div>
+            <div class="step"><div class="dot">5</div><div><b>人工批核</b><span>你 approve 後先 publish 去前台；高風險貨只可「收訂後代尋」。</span></div></div>
+            <div class="step"><div class="dot">6</div><div><b>訂單執行</b><span>收到訂金、自動通知買手鎖貨、記錄驗證、安排交收、完成毛利報表。</span></div></div>
           </div>
         </div>
       </section>
