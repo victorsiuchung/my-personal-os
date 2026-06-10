@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chelsea Court Valuation Dashboard</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg:#f5f7fb;
+      --panel:#ffffff;
+      --ink:#111827;
+      --muted:#667085;
+      --line:#e5e7eb;
+      --brand:#0f766e;
+      --brand-2:#0ea5e9;
+      --gold:#f59e0b;
+      --good:#16a34a;
+      --bad:#dc2626;
+      --soft:#ecfeff;
+      --shadow:0 18px 44px rgba(15,23,42,.08);
+    }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--bg); color:var(--ink); font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    button,input,select,textarea { font:inherit; }
+    a { color:inherit; }
+    .top { background:#0f172a; color:white; }
+    .top-inner { width:min(1240px, calc(100vw - 32px)); margin:0 auto; padding:10px 0; display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap; font-size:13px; color:#dbeafe; }
+    header { width:min(1240px, calc(100vw - 32px)); margin:22px auto 0; display:grid; grid-template-columns:1.1fr .9fr; gap:18px; align-items:stretch; }
+    .hero { border-radius:8px; overflow:hidden; background:#0f172a; color:white; min-height:390px; position:relative; box-shadow:var(--shadow); display:flex; flex-direction:column; justify-content:space-between; padding:32px; }
+    .hero::before { content:""; position:absolute; inset:0; background:linear-gradient(90deg, rgba(15,23,42,.92), rgba(15,23,42,.54)), url("https://staticmap.openstreetmap.de/staticmap.php?center=22.3667,114.117&zoom=16&size=900x520&markers=22.3667,114.117,red-pushpin"); background-size:cover; background-position:center; }
+    .hero > * { position:relative; z-index:1; }
+    .eyebrow { margin:0 0 10px; text-transform:uppercase; letter-spacing:.08em; font-size:13px; color:#a7f3d0; }
+    h1 { margin:0; max-width:780px; font-size:clamp(34px, 5vw, 64px); line-height:1; letter-spacing:0; }
+    .hero p { max-width:720px; color:#d1d5db; line-height:1.65; }
+    .address { border:1px solid rgba(255,255,255,.2); border-radius:8px; padding:14px; background:rgba(255,255,255,.08); backdrop-filter:blur(10px); }
+    .side { display:grid; gap:12px; }
+    .panel, .metric, .source-card { background:var(--panel); border:1px solid var(--line); border-radius:8px; box-shadow:var(--shadow); }
+    .metric { padding:18px; }
+    .metric span { color:var(--muted); font-size:13px; }
+    .metric b { display:block; margin-top:6px; font-size:30px; letter-spacing:0; }
+    .metric small { display:block; margin-top:6px; color:var(--muted); line-height:1.5; }
+    main { width:min(1240px, calc(100vw - 32px)); margin:18px auto 46px; display:grid; grid-template-columns:1fr 390px; gap:18px; align-items:start; }
+    .grid { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:12px; }
+    .panel h2 { margin:0; padding:16px; border-bottom:1px solid var(--line); font-size:18px; }
+    .panel-body { padding:14px; }
+    .toolbar { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px; }
+    .button { border:0; border-radius:8px; padding:11px 14px; background:var(--brand); color:white; font-weight:850; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; gap:8px; }
+    .button.secondary { background:white; color:var(--ink); border:1px solid var(--line); }
+    .button.gold { background:var(--gold); color:#111827; }
+    .form-grid { display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:10px; }
+    label { display:grid; gap:6px; color:var(--muted); font-size:12px; }
+    input,select,textarea { width:100%; border:1px solid var(--line); border-radius:8px; padding:10px 11px; background:white; color:var(--ink); outline:none; }
+    table { width:100%; border-collapse:collapse; font-size:14px; }
+    th,td { padding:11px 10px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; }
+    th { color:var(--muted); font-size:12px; font-weight:800; }
+    .pill { display:inline-flex; border-radius:999px; padding:4px 8px; background:var(--soft); color:var(--brand); font-weight:800; font-size:12px; }
+    .notice { border:1px solid #fde68a; background:#fffbeb; color:#92400e; border-radius:8px; padding:12px; line-height:1.55; font-size:13px; }
+    .source-list { display:grid; gap:10px; }
+    .source-card { padding:13px; box-shadow:none; }
+    .source-card h3 { margin:0 0 8px; font-size:15px; }
+    .source-card p { margin:0; color:var(--muted); line-height:1.5; font-size:13px; }
+    .source-card a { margin-top:10px; display:inline-flex; color:var(--brand); font-weight:850; font-size:13px; }
+    .chart { height:230px; border:1px solid var(--line); border-radius:8px; background:linear-gradient(180deg, #fff, #f8fafc); padding:12px; display:flex; align-items:end; gap:10px; }
+    .bar { flex:1; min-width:34px; border-radius:6px 6px 0 0; background:linear-gradient(180deg, var(--brand-2), var(--brand)); position:relative; }
+    .bar span { position:absolute; left:50%; bottom:100%; transform:translateX(-50%); white-space:nowrap; color:var(--muted); font-size:11px; margin-bottom:6px; }
+    .bar em { position:absolute; left:50%; top:100%; transform:translateX(-50%); white-space:nowrap; color:var(--muted); font-size:11px; margin-top:6px; font-style:normal; }
+    .sidebar { display:grid; gap:14px; position:sticky; top:16px; }
+    .bank-buttons { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .footer-note { color:var(--muted); font-size:12px; line-height:1.55; }
+    @media (max-width: 1050px) { header, main { grid-template-columns:1fr; } .sidebar { position:static; } .grid { grid-template-columns:1fr; } }
+    @media (max-width: 760px) { .form-grid { grid-template-columns:1fr; } .bank-buttons { grid-template-columns:1fr; } .hero { padding:22px; } }
+  </style>
+</head>
+<body>
+  <div class="top">
+    <div class="top-inner">
+      <span>Property Watch · Chelsea Court / North Chelsea Tower</span>
+      <span id="updatedAt"></span>
+    </div>
+  </div>
+
+  <header>
+    <section class="hero">
+      <div>
+        <p class="eyebrow">Owner valuation dashboard</p>
+        <h1>爵悅庭 北爵軒 26/F F室</h1>
+        <p>集中睇銀行網上估價、屋苑成交呎價、同區參考，同時保留每次估值記錄。銀行估價需要你親自開官方頁輸入資料，避免自動提交個人/物業資料。</p>
+      </div>
+      <div class="address">
+        Flat F, 26/F, North Chelsea Tower, Chelsea Court, 100 Yeung Uk Road, Tsuen Wan, N.T.
+      </div>
+    </section>
+
+    <aside class="side">
+      <div class="metric">
+        <span>Market snapshot estimate</span>
+        <b id="rangeValue">--</b>
+        <small>用你輸入嘅實用面積 × 公開屋苑呎價 snapshot 估算。</small>
+      </div>
+      <div class="grid">
+        <div class="metric">
+          <span>Midland 30D avg</span>
+          <b>HK$14,756</b>
+          <small>成交平均呎價，過去30日</small>
+        </div>
+        <div class="metric">
+          <span>Centaline listing range</span>
+          <b>12.9k-24.4k</b>
+          <small>放盤呎價區間</small>
+        </div>
+        <div class="metric">
+          <span>Tracked banks</span>
+          <b id="bankCount">0</b>
+          <small>你已輸入嘅銀行估價數量</small>
+        </div>
+      </div>
+    </aside>
+  </header>
+
+  <main>
+    <section class="panel">
+      <h2>Dashboard</h2>
+      <div class="panel-body">
+        <div class="toolbar">
+          <label style="max-width:180px">實用面積 sq.ft.
+            <input id="saleableArea" type="number" min="1" placeholder="例如 520">
+          </label>
+          <button class="button" id="saveArea">Save area</button>
+          <button class="button secondary" id="resetDemo">Reset sample data</button>
+        </div>
+
+        <div class="notice">銀行估價同地產網站資料可能會每日變；呢個 dashboard 會幫你整理同計算，但正式按揭/買賣決策要以銀行、土地註冊處及持牌代理確認資料為準。</div>
+
+        <h2 style="border:0;padding:24px 0 12px">Bank Valuation Log</h2>
+        <div class="form-grid">
+          <label>Bank
+            <select id="bankName">
+              <option>HSBC</option>
+              <option>BOCHK</option>
+              <option>Standard Chartered</option>
+              <option>Hang Seng</option>
+              <option>Other</option>
+            </select>
+          </label>
+          <label>Valuation HK$
+            <input id="bankValue" type="number" min="0" placeholder="7200000">
+          </label>
+          <label>Date
+            <input id="bankDate" type="date">
+          </label>
+          <label>Note
+            <input id="bankNote" placeholder="online valuation">
+          </label>
+        </div>
+        <div class="toolbar" style="margin-top:10px">
+          <button class="button" id="addBank">Add bank valuation</button>
+        </div>
+        <table>
+          <thead><tr><th>Bank</th><th>Date</th><th>Valuation</th><th>Implied HK$/ft²</th><th>Note</th><th></th></tr></thead>
+          <tbody id="bankRows"></tbody>
+        </table>
+
+        <h2 style="border:0;padding:24px 0 12px">Recent Transaction / Comparable Log</h2>
+        <div class="form-grid">
+          <label>Source
+            <input id="txSource" placeholder="Centaline / Midland / Ricacorp">
+          </label>
+          <label>Price HK$
+            <input id="txPrice" type="number" min="0" placeholder="7500000">
+          </label>
+          <label>HK$/ft²
+            <input id="txPsf" type="number" min="0" placeholder="14756">
+          </label>
+          <label>Date / label
+            <input id="txDate" placeholder="2026-06 / 30D avg">
+          </label>
+        </div>
+        <div class="toolbar" style="margin-top:10px">
+          <button class="button" id="addTx">Add comparable</button>
+        </div>
+        <table>
+          <thead><tr><th>Source</th><th>Date</th><th>Price</th><th>HK$/ft²</th><th>Signal</th><th></th></tr></thead>
+          <tbody id="txRows"></tbody>
+        </table>
+
+        <h2 style="border:0;padding:24px 0 12px">Valuation Chart</h2>
+        <div id="chart" class="chart"></div>
+      </div>
+    </section>
+
+    <aside class="sidebar">
+      <section class="panel">
+        <h2>Open Data Sources</h2>
+        <div class="panel-body source-list">
+          <div class="source-card">
+            <h3>Centaline 中原</h3>
+            <p>屋苑資料、CentaEstimate、成交紀錄、放盤呎價。</p>
+            <a href="https://hk.centanet.com/estate/en/Chelsea-Court/2-AEPPWPPRPK" target="_blank" rel="noreferrer">Open Centaline</a>
+          </div>
+          <div class="source-card">
+            <h3>Midland 美聯</h3>
+            <p>30日成交平均呎價、成交量、放盤平均呎價、售盤數量。</p>
+            <a href="https://www.midland.com.hk/zh-hk/estate/%E6%96%B0%E7%95%8C-%E8%8D%83%E7%81%A3%E8%A5%BF-%E7%88%B5%E6%82%85%E5%BA%AD-E000002042" target="_blank" rel="noreferrer">Open Midland</a>
+          </div>
+          <div class="source-card">
+            <h3>Ricacorp 利嘉閣</h3>
+            <p>用屋苑名「爵悅庭」搜尋最新成交及估價參考。</p>
+            <a href="https://www.ricacorp.com/zh-hk/search-property?keyword=%E7%88%B5%E6%82%85%E5%BA%AD" target="_blank" rel="noreferrer">Open Ricacorp Search</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Bank Valuation Links</h2>
+        <div class="panel-body">
+          <div class="bank-buttons">
+            <a class="button secondary" href="https://www.hsbc.com.hk/mortgages/" target="_blank" rel="noreferrer">HSBC</a>
+            <a class="button secondary" href="https://www.bochk.com/en/more/ebanking/" target="_blank" rel="noreferrer">BOCHK</a>
+            <a class="button secondary" href="https://www.sc.com/hk/mortgages/" target="_blank" rel="noreferrer">Standard Chartered</a>
+            <a class="button secondary" href="https://www.hangseng.com/en-hk/personal/mortgages/" target="_blank" rel="noreferrer">Hang Seng</a>
+          </div>
+          <p class="footer-note">開官方估價頁後輸入：Chelsea Court / North Chelsea Tower / 26/F / Flat F，再將結果記錄返入左邊。</p>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Property Facts</h2>
+        <div class="panel-body">
+          <table>
+            <tbody>
+              <tr><th>Estate</th><td>爵悅庭 Chelsea Court</td></tr>
+              <tr><th>Address</th><td>荃灣楊屋道100號</td></tr>
+              <tr><th>Developer</th><td>新鴻基 Sun Hung Kai</td></tr>
+              <tr><th>Occupation</th><td>2005 / 06</td></tr>
+              <tr><th>Blocks / Units</th><td>4 blocks / 1,624 units</td></tr>
+              <tr><th>MTR</th><td>約9分鐘至荃灣西站</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </aside>
+  </main>
+
+  <script>
+    const storeKey = "chelsea-court-watch-v1";
+    const defaults = {
+      area: "",
+      banks: [],
+      txs: [
+        { source:"Midland snapshot", date:"Past 30D", price:"", psf:14756, signal:"成交平均呎價，成交量2宗" },
+        { source:"Midland listing", date:"Current", price:"", psf:15214, signal:"放盤平均呎價" },
+        { source:"Centaline listing low", date:"Current", price:"", psf:12919, signal:"放盤呎價下沿" },
+        { source:"Centaline listing high", date:"Current", price:"", psf:24439, signal:"放盤呎價上沿" }
+      ]
+    };
+    let state = loadState();
+    const fmt = new Intl.NumberFormat("en-HK");
+    document.querySelector("#updatedAt").textContent = `Updated ${new Date().toLocaleString("en-HK")}`;
+    document.querySelector("#bankDate").valueAsDate = new Date();
+    document.querySelector("#saleableArea").value = state.area || "";
+
+    document.querySelector("#saveArea").addEventListener("click", () => {
+      state.area = document.querySelector("#saleableArea").value;
+      save();
+    });
+    document.querySelector("#addBank").addEventListener("click", addBank);
+    document.querySelector("#addTx").addEventListener("click", addTx);
+    document.querySelector("#resetDemo").addEventListener("click", () => {
+      state = structuredClone(defaults);
+      document.querySelector("#saleableArea").value = "";
+      save();
+    });
+    render();
+
+    function loadState() {
+      try { return JSON.parse(localStorage.getItem(storeKey)) || structuredClone(defaults); }
+      catch { return structuredClone(defaults); }
+    }
+    function save() {
+      localStorage.setItem(storeKey, JSON.stringify(state));
+      render();
+    }
+    function addBank() {
+      const value = Number(document.querySelector("#bankValue").value);
+      if (!value) return alert("請輸入銀行估價");
+      state.banks.push({
+        bank: document.querySelector("#bankName").value,
+        value,
+        date: document.querySelector("#bankDate").value || new Date().toISOString().slice(0,10),
+        note: document.querySelector("#bankNote").value
+      });
+      document.querySelector("#bankValue").value = "";
+      document.querySelector("#bankNote").value = "";
+      save();
+    }
+    function addTx() {
+      const source = document.querySelector("#txSource").value || "Manual comparable";
+      const price = Number(document.querySelector("#txPrice").value || 0);
+      const psf = Number(document.querySelector("#txPsf").value || 0);
+      if (!price && !psf) return alert("請輸入成交價或呎價");
+      state.txs.push({ source, date: document.querySelector("#txDate").value || "Manual", price, psf, signal:"manual input" });
+      ["#txSource","#txPrice","#txPsf","#txDate"].forEach((id) => document.querySelector(id).value = "");
+      save();
+    }
+    function removeRow(type, index) {
+      state[type].splice(index, 1);
+      save();
+    }
+    function render() {
+      const area = Number(state.area || 0);
+      document.querySelector("#bankCount").textContent = state.banks.length;
+      renderBankRows(area);
+      renderTxRows();
+      renderRange(area);
+      renderChart(area);
+    }
+    function renderBankRows(area) {
+      document.querySelector("#bankRows").innerHTML = state.banks.length ? state.banks.map((item, index) => `
+        <tr>
+          <td><span class="pill">${escapeHtml(item.bank)}</span></td>
+          <td>${escapeHtml(item.date)}</td>
+          <td>HK$${fmt.format(item.value)}</td>
+          <td>${area ? `HK$${fmt.format(Math.round(item.value / area))}` : "--"}</td>
+          <td>${escapeHtml(item.note || "")}</td>
+          <td><button class="button secondary" onclick="removeRow('banks', ${index})">Remove</button></td>
+        </tr>
+      `).join("") : `<tr><td colspan="6">未有銀行估價。開右邊銀行連結查完後加返入嚟。</td></tr>`;
+    }
+    function renderTxRows() {
+      document.querySelector("#txRows").innerHTML = state.txs.map((item, index) => `
+        <tr>
+          <td>${escapeHtml(item.source)}</td>
+          <td>${escapeHtml(item.date || "")}</td>
+          <td>${item.price ? `HK$${fmt.format(item.price)}` : "--"}</td>
+          <td>${item.psf ? `HK$${fmt.format(item.psf)}` : "--"}</td>
+          <td>${escapeHtml(item.signal || "")}</td>
+          <td><button class="button secondary" onclick="removeRow('txs', ${index})">Remove</button></td>
+        </tr>
+      `).join("");
+    }
+    function renderRange(area) {
+      const psfs = state.txs.map((x) => Number(x.psf)).filter(Boolean).sort((a,b) => a-b);
+      if (!area || !psfs.length) {
+        document.querySelector("#rangeValue").textContent = "Input area";
+        return;
+      }
+      const low = psfs[Math.floor(psfs.length * .25)] || psfs[0];
+      const high = psfs[Math.ceil(psfs.length * .75) - 1] || psfs[psfs.length - 1];
+      document.querySelector("#rangeValue").textContent = `HK$${fmt.format(Math.round(low * area / 10000) / 100)}M - ${fmt.format(Math.round(high * area / 10000) / 100)}M`;
+    }
+    function renderChart(area) {
+      const points = [
+        ...state.txs.map((x) => ({ label:x.source, value: area && x.psf ? x.psf * area : x.price })),
+        ...state.banks.map((x) => ({ label:x.bank, value:x.value }))
+      ].filter((x) => Number(x.value));
+      const max = Math.max(...points.map((x) => x.value), 1);
+      document.querySelector("#chart").innerHTML = points.length ? points.slice(-8).map((point) => `
+        <div class="bar" style="height:${Math.max(8, point.value / max * 100)}%">
+          <span>${Math.round(point.value / 10000) / 100}M</span>
+          <em>${escapeHtml(point.label).slice(0,12)}</em>
+        </div>
+      `).join("") : `<div class="empty">Input area or valuations to draw chart.</div>`;
+    }
+    function escapeHtml(value) {
+      return String(value ?? "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
+    }
+  </script>
+</body>
+</html>
