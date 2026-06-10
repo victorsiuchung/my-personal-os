@@ -212,6 +212,12 @@
         <h2>Open Data Sources</h2>
         <div class="panel-body source-list">
           <div class="source-card">
+            <h3>Centaline Snapshot</h3>
+            <p>一按抓取中原 Chelsea Court 屋苑頁最新 snapshot，更新成交呎價區間、售盤/租盤數量及抓取時間。</p>
+            <button class="button" style="margin-top:10px" onclick="fetchCentalineSnapshot()">Fetch Centaline Snapshot</button>
+            <div id="centalineSnapshot" class="notice" style="margin-top:10px">未抓取。按上面 button 更新。</div>
+          </div>
+          <div class="source-card">
             <h3>Live Transaction Search</h3>
             <p>每日查最新成交：開中原 / 美聯成交搜尋，再輸入「爵悅庭」「Chelsea Court」「北爵軒」。</p>
             <div class="bank-buttons" style="margin-top:10px">
@@ -311,7 +317,8 @@
       midlandEstate: "https://www.midland.com.hk/zh-hk/estate/%E6%96%B0%E7%95%8C-%E8%8D%83%E7%81%A3%E8%A5%BF-%E7%88%B5%E6%82%85%E5%BA%AD-E000002042",
       centalineEstate: "https://hk.centanet.com/estate/en/Chelsea-Court/2-AEPPWPPRPK",
       centalineTransactions: "https://hk.centanet.com/findproperty/list/transaction",
-      midlandTransactions: "https://www.midland.com.hk/zh-hk/list/transaction"
+      midlandTransactions: "https://www.midland.com.hk/zh-hk/list/transaction",
+      centalineReader: "https://r.jina.ai/http://r.jina.ai/http://https://hk.centanet.com/estate/en/Chelsea-Court/2-AEPPWPPRPK"
     };
     const latestTransactions = [
       { date:"26/04/2026", block:"東爵軒 (A1)", floor:"55/F", flat:"C", rooms:"1房2廳", price:7370000, area:479, psf:15382, previous:"HK$709萬 / +4%", holding:"6.6年", recordType:"註冊處成交", source:"Midland / Land Registry", url:sourceUrls.midlandEstate },
@@ -328,6 +335,7 @@
     const defaults = {
       area: "",
       banks: [],
+      centalineSnapshot: null,
       txs: [
         { source:"Midland snapshot", date:"Past 30D", price:"", psf:15263, signal:"成交平均呎價，成交量6宗" },
         { source:"Midland listing", date:"Current", price:"", psf:15813, signal:"放盤平均呎價" },
@@ -394,8 +402,50 @@
       renderBankRows(area);
       renderTxRows();
       renderLatestTransactions();
+      renderCentalineSnapshot();
       renderRange(area);
       renderChart(area);
+    }
+    function renderCentalineSnapshot() {
+      const el = document.querySelector("#centalineSnapshot");
+      if (!el) return;
+      const snap = state.centalineSnapshot;
+      if (!snap) {
+        el.innerHTML = "未抓取。按上面 button 更新。";
+        return;
+      }
+      el.innerHTML = `
+        <strong>${escapeHtml(snap.title || "Chelsea Court")}</strong><br>
+        中原成交呎價月份：${escapeHtml(snap.transMonth || "--")}<br>
+        成交呎價區間：${escapeHtml(snap.transPsfRange || "--")}<br>
+        售盤：${escapeHtml(snap.buyCount || "--")}　租盤：${escapeHtml(snap.rentCount || "--")}<br>
+        更新：${escapeHtml(snap.fetchedAt)}
+      `;
+    }
+    async function fetchCentalineSnapshot() {
+      const el = document.querySelector("#centalineSnapshot");
+      el.innerHTML = "正在讀取中原 snapshot...";
+      try {
+        const response = await fetch(sourceUrls.centalineReader, { cache:"no-store" });
+        if (!response.ok) throw new Error(`Reader ${response.status}`);
+        const text = await response.text();
+        const title = (text.match(/Title:\\s*(.+)/) || [])[1] || "Chelsea Court";
+        const trans = text.match(/Price\/ ft² by trans\. \(S\.A\.\) in\s+([^|\n]+)\|\s*\$([0-9,]+\s*-\s*\$?[0-9,]+)/);
+        const buy = text.match(/Buy \\((\\d+)\\)/);
+        const rent = text.match(/Rent \\((\\d+)\\)/);
+        state.centalineSnapshot = {
+          title,
+          transMonth: trans ? trans[1].trim() : "",
+          transPsfRange: trans ? `$${trans[2].replace("$", "")}` : "",
+          buyCount: buy ? buy[1] : "",
+          rentCount: rent ? rent[1] : "",
+          fetchedAt: new Date().toLocaleString("en-HK"),
+          source: sourceUrls.centalineEstate
+        };
+        save();
+      } catch (error) {
+        el.innerHTML = `未能抓取：${escapeHtml(error.message)}<br>可改用右邊中原成交搜尋手動查。`;
+      }
     }
     function renderBankRows(area) {
       document.querySelector("#bankRows").innerHTML = state.banks.length ? state.banks.map((item, index) => `
