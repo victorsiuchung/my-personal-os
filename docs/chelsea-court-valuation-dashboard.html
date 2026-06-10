@@ -115,12 +115,12 @@
       <div class="grid">
         <div class="metric">
           <span>Midland 30D avg</span>
-          <b>HK$14,756</b>
+          <b>HK$15,263</b>
           <small>成交平均呎價，過去30日</small>
         </div>
         <div class="metric">
           <span>Centaline listing range</span>
-          <b>12.9k-24.4k</b>
+          <b>13.3k-24.4k</b>
           <small>放盤呎價區間</small>
         </div>
         <div class="metric">
@@ -198,8 +198,8 @@
           <tbody id="txRows"></tbody>
         </table>
 
-        <h2 style="border:0;padding:24px 0 12px">Latest Registered Transactions</h2>
-        <div class="notice">以下為美聯爵悅庭頁面列出的最近註冊處成交 snapshot；按每張卡可睇詳情及開原始來源。你的單位是北爵軒 26/F F室，所以同座、相近面積、同字母單位會較有參考價值。</div>
+        <h2 style="border:0;padding:24px 0 12px">Latest Transactions / Registry Records</h2>
+        <div class="notice">以下為美聯爵悅庭頁面可讀到的最新 2026 成交 / 註冊處成交 snapshot；按每張卡可睇詳情及開原始來源。中原有 Latest Trans. / Register of Transactions 入口，但交易列表需在中原頁面互動展開，所以 dashboard 會保留中原入口作覆核。</div>
         <div id="latestTransactions" class="tx-cards"></div>
 
         <h2 style="border:0;padding:24px 0 12px">Valuation Chart</h2>
@@ -299,24 +299,24 @@
       centalineEstate: "https://hk.centanet.com/estate/en/Chelsea-Court/2-AEPPWPPRPK"
     };
     const latestTransactions = [
-      { date:"09/12/2025", block:"西爵軒 (B1)", floor:"51/F", flat:"C", rooms:"4房2廳", price:11140000, area:716, psf:15559, previous:"HK$545萬 / +104%", holding:"15.7年", source:"Midland / Land Registry", url:sourceUrls.midlandEstate },
-      { date:"07/12/2025", block:"東爵軒 (A1)", floor:"51/F", flat:"H", rooms:"3房2廳", price:7600000, area:554, psf:13718, previous:"HK$306萬 / +148%", holding:"16.7年", source:"Midland / Land Registry", url:sourceUrls.midlandEstate },
-      { date:"26/11/2025", block:"西爵軒 (B1)", floor:"25/F", flat:"H", rooms:"1房2廳", price:5500000, area:464, psf:11853, previous:"HK$670萬 / -18%", holding:"5.8年", source:"Midland / Land Registry", url:sourceUrls.midlandEstate },
-      { date:"25/11/2025", block:"北爵軒 (B2)", floor:"6/F", flat:"H", rooms:"1房2廳", price:5750000, area:464, psf:12392, previous:"HK$490萬 / +17%", holding:"11.0年", source:"Midland / Land Registry", url:sourceUrls.midlandEstate },
-      { date:"24/11/2025", block:"西爵軒 (B1)", floor:"28/F", flat:"H", rooms:"1房2廳", price:6300000, area:464, psf:13578, previous:"HK$318萬 / +98%", holding:"14.9年", source:"Midland / Land Registry", url:sourceUrls.midlandEstate },
-      { date:"24/11/2025", block:"北爵軒 (B2)", floor:"36/F", flat:"C", rooms:"3房2廳", price:9300000, area:722, psf:12881, previous:"HK$481萬 / +93%", holding:"21.0年", source:"Midland / Land Registry", url:sourceUrls.midlandEstate },
-      { date:"23/11/2025", block:"西爵軒 (B1)", floor:"43/F", flat:"F", rooms:"1房2廳", price:6490000, area:467, psf:13897, previous:"HK$271萬 / +139%", holding:"21.0年", source:"Midland / Land Registry", url:sourceUrls.midlandEstate },
-      { date:"19/11/2025", block:"西爵軒 (B1)", floor:"55/F", flat:"G", rooms:"1房2廳", price:8190000, area:559, psf:14648, previous:"HK$638萬 / +28%", holding:"12.4年", source:"Midland / Land Registry", url:sourceUrls.midlandEstate },
-      { date:"09/11/2025", block:"南爵軒 (A2)", floor:"36/F", flat:"C", rooms:"1房2廳", price:6000000, area:469, psf:12793, previous:"HK$362萬 / +66%", holding:"14.3年", source:"Midland / Land Registry", url:sourceUrls.midlandEstate },
-      { date:"05/11/2025", block:"西爵軒 (B1)", floor:"21/F", flat:"C", rooms:"4房2廳", price:8000000, area:722, psf:11080, previous:"特殊成交個案", holding:"--", source:"Midland / Land Registry", url:sourceUrls.midlandEstate }
+      { date:"26/04/2026", block:"東爵軒 (A1)", floor:"55/F", flat:"C", rooms:"1房2廳", price:7370000, area:479, psf:15382, previous:"HK$709萬 / +4%", holding:"6.6年", recordType:"註冊處成交", source:"Midland / Land Registry", url:sourceUrls.midlandEstate },
+      { date:"23/04/2026", block:"北爵軒 (B2)", floor:"21/F", flat:"C", rooms:"3房2廳", price:9800000, area:722, psf:13573, previous:"HK$404萬 / +142%", holding:"21.4年", recordType:"註冊處成交", source:"Midland / Land Registry", url:sourceUrls.midlandEstate },
+      { date:"21/04/2026", block:"西爵軒 (B1)", floor:"66/F", flat:"G", rooms:"1房2廳", price:9900000, area:598, psf:16555, previous:"HK$1,038萬 / -5%", holding:"2.8年", recordType:"註冊處成交", source:"Midland / Land Registry", url:sourceUrls.midlandEstate },
+      { date:"16/04/2026", block:"北爵軒 (B2)", floor:"30/F", flat:"E", rooms:"1房2廳", price:6980000, area:450, psf:15511, previous:"HK$305萬 / +129%", holding:"15.6年", recordType:"註冊處成交", source:"Midland / Land Registry", url:sourceUrls.midlandEstate },
+      { date:"07/04/2026", block:"西爵軒 (B1)", floor:"51/F", flat:"F", rooms:"1房2廳", price:7480000, area:452, psf:16549, previous:"HK$730萬 / +3%", holding:"8.1年", recordType:"註冊處成交", source:"Midland / Land Registry", url:sourceUrls.midlandEstate },
+      { date:"01/04/2026", block:"南爵軒 (A2)", floor:"23/F", flat:"C", rooms:"1房2廳", price:6780000, area:464, psf:14612, previous:"HK$278萬 / +144%", holding:"15.6年", recordType:"註冊處成交", source:"Midland / Land Registry", url:sourceUrls.midlandEstate },
+      { date:"26/03/2026", block:"西爵軒 (B1)", floor:"65/F", flat:"D", rooms:"1房2廳", price:8300000, area:521, psf:15931, previous:"HK$567萬 / +46%", holding:"13.0年", recordType:"註冊處成交", source:"Midland / Land Registry", url:sourceUrls.midlandEstate },
+      { date:"24/03/2026", block:"東爵軒 (A1)", floor:"26/F", flat:"E", rooms:"1房1廳", price:5400000, area:372, psf:14516, previous:"HK$444萬 / +22%", holding:"9.5年", recordType:"註冊處成交", source:"Midland / Land Registry", url:sourceUrls.midlandEstate },
+      { date:"18/03/2026", block:"東爵軒 (A1)", floor:"33/F", flat:"F", rooms:"1房2廳", price:6300000, area:475, psf:13263, previous:"HK$461萬 / +37%", holding:"12.3年", recordType:"註冊處成交", source:"Midland / Land Registry", url:sourceUrls.midlandEstate },
+      { date:"18/03/2026", block:"東爵軒 (A1)", floor:"28/F", flat:"B", rooms:"3房2廳", price:8000000, area:640, psf:12500, previous:"HK$386萬 / +107%", holding:"20.8年", recordType:"註冊處成交", source:"Midland / Land Registry", url:sourceUrls.midlandEstate }
     ];
     const defaults = {
       area: "",
       banks: [],
       txs: [
-        { source:"Midland snapshot", date:"Past 30D", price:"", psf:14756, signal:"成交平均呎價，成交量2宗" },
-        { source:"Midland listing", date:"Current", price:"", psf:15214, signal:"放盤平均呎價" },
-        { source:"Centaline listing low", date:"Current", price:"", psf:12919, signal:"放盤呎價下沿" },
+        { source:"Midland snapshot", date:"Past 30D", price:"", psf:15263, signal:"成交平均呎價，成交量6宗" },
+        { source:"Midland listing", date:"Current", price:"", psf:15813, signal:"放盤平均呎價" },
+        { source:"Centaline listing low", date:"Current", price:"", psf:13277, signal:"放盤呎價下沿" },
         { source:"Centaline listing high", date:"Current", price:"", psf:24439, signal:"放盤呎價上沿" }
       ]
     };
@@ -413,6 +413,7 @@
           <strong>HK$${fmt.format(item.price)}</strong>
           <div class="meta">
             <span class="pill">${escapeHtml(item.date)}</span>
+            <span class="pill">${escapeHtml(item.recordType || "成交")}</span>
             <span class="pill">實 ${fmt.format(item.area)} 呎</span>
             <span class="pill">@ HK$${fmt.format(item.psf)}</span>
           </div>
@@ -430,11 +431,12 @@
           <div class="detail-box"><span>實用面積</span><strong>${fmt.format(item.area)} ft²</strong></div>
           <div class="detail-box"><span>實用呎價</span><strong>HK$${fmt.format(item.psf)}</strong></div>
           <div class="detail-box"><span>間隔</span><strong>${escapeHtml(item.rooms)}</strong></div>
+          <div class="detail-box"><span>成交類型</span><strong>${escapeHtml(item.recordType || "成交")}</strong></div>
           <div class="detail-box"><span>上次成交 / 升跌</span><strong>${escapeHtml(item.previous)}</strong></div>
           <div class="detail-box"><span>持貨年期</span><strong>${escapeHtml(item.holding)}</strong></div>
           <div class="detail-box"><span>Source</span><strong>${escapeHtml(item.source)}</strong></div>
         </div>
-        <div class="notice">同你單位最相關的是同座北爵軒、相近樓層、相近實用面積及同字母單位。此 snapshot 來自美聯頁面列出的註冊處成交，正式估值前仍建議用土地註冊處/代理核實。</div>
+        <div class="notice">同你單位最相關的是同座北爵軒、相近樓層、相近實用面積及同字母單位。中原註冊 record 可作硬數據覆核；代理頁標示「成交」但未註冊的資料，應視為較新但仍需確認。</div>
         <a class="button" href="${escapeHtml(item.url)}" target="_blank" rel="noreferrer">Open original source</a>
       `;
       document.querySelector("#txModal").style.display = "grid";
