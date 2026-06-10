@@ -44,6 +44,31 @@ API runs at:
 http://127.0.0.1:8787
 ```
 
+## Deploy Backend
+
+GitHub Pages can only host static HTML, so the Python API needs a backend host such as Render, Railway, Fly.io, or a VPS.
+
+This folder includes:
+
+```text
+Dockerfile
+render.yaml
+```
+
+Recommended simple path:
+
+1. Push this folder to GitHub.
+2. Create a new Render Web Service from the repo.
+3. Set the root directory to `pokemon-arbitrage-system`.
+4. Use Docker deployment.
+5. After Render gives you a public URL, update `apiBase` in `docs/pokemon-arbitrage-storefront.html`.
+
+Example:
+
+```js
+const apiBase = "https://your-render-service.onrender.com";
+```
+
 ## Main Endpoints
 
 ```text
@@ -66,4 +91,3 @@ After source approval, add source-specific collectors:
 - eBay sold listing checker
 - Beelive / TT Poke / Cardex / CardCornerX retail reference importers
 - Manual Facebook Marketplace / group deal entry
-
