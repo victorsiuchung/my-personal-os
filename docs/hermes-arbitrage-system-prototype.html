@@ -258,14 +258,59 @@
 
     .deal-table tr:last-child td { border-bottom: 0; }
 
+    .item-visual {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 310px;
+    }
+
+    .thumb {
+      width: 72px;
+      height: 72px;
+      object-fit: contain;
+      flex: 0 0 72px;
+      background: #f3eee7;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 4px;
+    }
+
+    .photo-placeholder {
+      display: grid;
+      place-items: center;
+      text-align: center;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.2;
+    }
+
+    .product-photo-placeholder {
+      aspect-ratio: 4 / 3;
+      background: #eee9e1;
+      border-bottom: 1px solid var(--line);
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+      padding: 18px;
+    }
+
     .item-title {
       display: grid;
       gap: 4px;
-      min-width: 210px;
+      min-width: 0;
     }
 
     .item-title b { font-size: 15px; }
     .item-title small, .muted { color: var(--muted); }
+
+    .source-link {
+      color: var(--blue);
+      font-size: 12px;
+      text-decoration: none;
+    }
 
     .tag {
       display: inline-flex;
@@ -416,10 +461,24 @@
       background: #eee;
     }
 
+    .product img.official {
+      object-fit: contain;
+      padding: 18px;
+      background: #eee9e1;
+    }
+
     .product-body {
       padding: 16px;
       display: grid;
       gap: 10px;
+    }
+
+    .source-note {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.45;
+      border-top: 1px solid var(--line);
+      padding-top: 10px;
     }
 
     .product h3 {
@@ -615,7 +674,7 @@
                 </thead>
                 <tbody>
                   <tr>
-                    <td><div class="item-title"><b>Hermes Kelly 28 Gold Epsom GHW</b><small>Box / dust bag / 2021 Z stamp</small></div></td>
+                    <td><div class="item-visual"><img class="thumb" alt="Hermes 24/24 official reference" src="https://assets.hermes.com/is/image/hermesproduct/2424-21-bag--082153CKBH-worn-1-0-0-800-800_g.jpg" /><div class="item-title"><b>Hermes Kelly 28 Gold Epsom GHW</b><small>Closest official top-handle reference · use seller photos before purchase</small><a class="source-link" href="https://www.hermes.com/hk/en/product/2424-21-bag-H082153CKBH/" target="_blank" rel="noreferrer">Hermes official reference</a></div></div></td>
                     <td>Carousell HK</td>
                     <td>HK$118,000</td>
                     <td>HK$148,000</td>
@@ -624,7 +683,7 @@
                     <td><button class="btn gold deal-action">批核</button></td>
                   </tr>
                   <tr>
-                    <td><div class="item-title"><b>Hermes Birkin 30 Noir Togo PHW</b><small>Full set / light corner wear</small></div></td>
+                    <td><div class="item-visual"><img class="thumb" alt="Hermes Garden Party official reference" src="https://assets.hermes.com/is/image/hermesproduct/garden-party-30-bag--051568CKS2-front-wm-1-0-0-800-800_g.jpg" /><div class="item-title"><b>Hermes Birkin 30 Noir Togo PHW</b><small>Closest official tote reference · full seller set required</small><a class="source-link" href="https://www.hermes.com/hk/en/product/garden-party-30-bag-H051568CKS2/" target="_blank" rel="noreferrer">Hermes official reference</a></div></div></td>
                     <td>米蘭站 / 店舖報價</td>
                     <td>HK$142,000</td>
                     <td>HK$168,000</td>
@@ -633,7 +692,7 @@
                     <td><button class="btn deal-action">加入前台</button></td>
                   </tr>
                   <tr>
-                    <td><div class="item-title"><b>Hermes Constance 18 Etoupe Epsom</b><small>Receipt photo only / seller rating 5.0</small></div></td>
+                    <td><div class="item-visual"><img class="thumb" alt="Hermes Lindy 26 official reference" src="https://assets.hermes.com/is/image/hermesproduct/lindy-26-bag--073428CC10-front-1-300-0-800-800_g.jpg" /><div class="item-title"><b>Hermes Constance 18 Etoupe Epsom</b><small>Official leather finish reference · receipt photo only</small><a class="source-link" href="https://www.hermes.com/hk/en/product/lindy-26-bag-H073428CC10/" target="_blank" rel="noreferrer">Hermes official reference</a></div></div></td>
                     <td>Carousell HK</td>
                     <td>HK$82,000</td>
                     <td>HK$105,000</td>
@@ -642,7 +701,7 @@
                     <td><button class="btn deal-action">批核</button></td>
                   </tr>
                   <tr>
-                    <td><div class="item-title"><b>Chanel Classic Flap Medium Black</b><small>Series 31 / lambskin</small></div></td>
+                    <td><div class="item-visual"><div class="thumb photo-placeholder">seller<br>photo</div><div class="item-title"><b>Chanel Classic Flap Medium Black</b><small>Official Chanel page checked · direct image blocked, upload seller photo</small><a class="source-link" href="https://www.chanel.com/hk-en/fashion/p/AS6130B23483U2366/small-flap-bag-grained-shiny-calfskin-gold-tone-metal/" target="_blank" rel="noreferrer">Chanel official reference</a></div></div></td>
                     <td>Brand Off HK</td>
                     <td>HK$49,500</td>
                     <td>HK$60,800</td>
@@ -651,7 +710,7 @@
                     <td><button class="btn deal-action">觀察</button></td>
                   </tr>
                   <tr>
-                    <td><div class="item-title"><b>Hermes Lindy 26 Beton Clemence</b><small>No invoice / price below range</small></div></td>
+                    <td><div class="item-visual"><img class="thumb" alt="Hermes Lindy 26 official image" src="https://assets.hermes.com/is/image/hermesproduct/lindy-26-bag--073428CC10-front-1-300-0-800-800_g.jpg" /><div class="item-title"><b>Hermes Lindy 26 Beton Clemence</b><small>Official Lindy 26 reference · no invoice / price below range</small><a class="source-link" href="https://www.hermes.com/hk/en/product/lindy-26-bag-H073428CC10/" target="_blank" rel="noreferrer">Hermes official reference</a></div></div></td>
                     <td>社群賣家</td>
                     <td>HK$51,000</td>
                     <td>HK$73,000</td>
@@ -714,30 +773,43 @@
           <div class="product-band">
             <div class="product-grid">
               <article class="product">
-                <img alt="Gold luxury leather handbag" src="https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=900&q=85" />
+                <img class="official" alt="Hermes 24/24 official top-handle reference" src="https://assets.hermes.com/is/image/hermesproduct/2424-21-bag--082153CKBH-worn-1-0-0-800-800_g.jpg" />
                 <div class="product-body">
                   <h3>Kelly 28 Gold Epsom</h3>
                   <span class="muted">Full set · Excellent · 2021</span>
                   <div class="price-line"><strong>HK$148,000</strong><span class="tag good">可預留</span></div>
                   <button class="btn primary order-btn">落訂 HK$22,200</button>
+                  <div class="source-note">Official reference: Hermes 24/24 top-handle shape. Replace with seller/authentication photos before live sale.</div>
                 </div>
               </article>
               <article class="product">
-                <img alt="Black luxury handbag detail" src="https://images.unsplash.com/photo-1594223274512-ad4803739b7c?auto=format&fit=crop&w=900&q=85" />
+                <img class="official" alt="Hermes Garden Party official tote reference" src="https://assets.hermes.com/is/image/hermesproduct/garden-party-30-bag--051568CKS2-front-wm-1-0-0-800-800_g.jpg" />
                 <div class="product-body">
                   <h3>Birkin 30 Noir Togo</h3>
                   <span class="muted">Full set · Very good · PHW</span>
                   <div class="price-line"><strong>HK$168,000</strong><span class="tag warn">待確認</span></div>
                   <button class="btn primary order-btn">落訂 HK$25,200</button>
+                  <div class="source-note">Official reference: Hermes Garden Party tote proportion. Final listing needs exact Birkin seller photos.</div>
                 </div>
               </article>
               <article class="product">
-                <img alt="Neutral designer handbag on chair" src="https://images.unsplash.com/photo-1575032617751-6ddec2089882?auto=format&fit=crop&w=900&q=85" />
+                <img class="official" alt="Hermes Lindy 26 official leather reference" src="https://assets.hermes.com/is/image/hermesproduct/lindy-26-bag--073428CC10-front-1-300-0-800-800_g.jpg" />
                 <div class="product-body">
                   <h3>Constance 18 Etoupe</h3>
                   <span class="muted">Epsom · Compact · Seller verified</span>
                   <div class="price-line"><strong>HK$105,000</strong><span class="tag good">可預留</span></div>
                   <button class="btn primary order-btn">落訂 HK$15,750</button>
+                  <div class="source-note">Official reference: Hermes leather and gold hardware treatment. Confirm exact Constance photos before sourcing.</div>
+                </div>
+              </article>
+              <article class="product">
+                <div class="product-photo-placeholder">Chanel official image blocks direct display.<br>Upload authenticated seller photos.</div>
+                <div class="product-body">
+                  <h3>Chanel Classic Flap</h3>
+                  <span class="muted">Series 31 · Lambskin · Black</span>
+                  <div class="price-line"><strong>HK$60,800</strong><span class="tag warn">待驗證</span></div>
+                  <button class="btn primary order-btn">落訂 HK$9,120</button>
+                  <div class="source-note">Chanel official product page reviewed, but direct image hotlink is blocked. Upload authenticated seller photos before publishing this item live.</div>
                 </div>
               </article>
             </div>
