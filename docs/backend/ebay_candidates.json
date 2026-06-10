@@ -1,0 +1,16 @@
+[
+  {
+    "source": "eBay",
+    "query": "Hermes Kelly 28",
+    "title": "Hermes Kelly 28 Sellier Epsom",
+    "price_hkd": 145000,
+    "listing_url": "https://www.ebay.com/sch/i.html?_nkw=Hermes+Kelly+28",
+    "seller_contact_url": "https://www.ebay.com/sch/i.html?_nkw=Hermes+Kelly+28",
+    "location": "Hong Kong / Global",
+    "condition": "Pre-owned",
+    "notes": "Demo row: replace with exact eBay item URL or API result",
+    "snapshot_time": "2026-06-10T03:39:31.217688+00:00",
+    "risk_flag": "medium",
+    "publish_status": "needs_approval"
+  }
+]
